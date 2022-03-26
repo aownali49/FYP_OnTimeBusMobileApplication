@@ -5,8 +5,6 @@ import { dummy, COLORS, SIZES, FONTS, icons, images } from "../constants";
 import MapView from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { getImageSourceProperties } from 'react-native/Libraries/Image/ImageSource';
-
 
 
 const HomeScreen = ({ navigation }) => {
@@ -61,7 +59,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.black }}
     >
-    {  renderHeader()}
+    {renderHeader()}
 
     </SafeAreaView>
   )

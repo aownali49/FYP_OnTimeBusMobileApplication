@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from 'react'
 import { NavigationContainer } from "@react-navigation/native";
-import { HomeScreen,SettingScreen,ProfileScreen } from "../screens";
+import { HomeScreen,SettingScreen,ProfileScreen, Home } from "../screens";
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { COLORS, FONTS, icons } from "../constants/index"
 const BottomTab = createBottomTabNavigator();
@@ -53,7 +53,7 @@ const BottomTabShow=()=>{
             />
             <BottomTab.Screen 
                 name = "Home" 
-                component={HomeScreen}
+                component={Home}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
