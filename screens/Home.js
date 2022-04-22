@@ -10,6 +10,7 @@ const Home = () => {
 
     let _panel = useRef(null);
     const [isModalVisible, setModalVisible] = useState(false);
+    const [isResultVisible, setResultVisible] = useState(false);
     const [dragging, setDragging] = useState(true);
     const [stopsInfo, setStopInfo] = useState([
         {
@@ -75,6 +76,37 @@ const Home = () => {
         }
 
     }, []);
+
+    function renderSearchResultModal() {
+        return (
+            <Modal
+                style = {{ flex:1
+                  }
+                  }
+                transparent
+                visible={isResultVisible}
+                animationType='fade'
+                onRequestClose={() => { setResultVisible(!isResultVisible) }}
+            >
+                <View 
+                    style = {{
+                        backgroundColor:COLORS.white,
+                        height:"100%",
+                        width:"100%"
+                    }}
+                
+                >
+                    <Text style = {{
+                        color:COLORS.black,
+                        height:"100%",
+                        width:"100%"
+                    }}>
+                        Result Modal works!
+                    </Text>
+                </View>
+            </Modal>
+        )
+    }
 
 
 
@@ -462,7 +494,7 @@ const Home = () => {
                         data={searchResult}
                         renderItem={({ item, index }) => {
                             return (
-                                <SearchResultCard />
+                                <SearchResultCard handlePress = { ()=>{setResultVisible(!isResultVisible)}} />
                             )
                         }}
 
@@ -479,10 +511,12 @@ const Home = () => {
 
     return (
         <View style={styles.HOME}>
+            {renderSearchResultModal()}
             {renderMap()}
             {renderSwipeUpModal()}
             {renderSearchBar()}
             {renderSearchModal()}
+            
         </View>
     )
 }

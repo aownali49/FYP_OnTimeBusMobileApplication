@@ -5,9 +5,11 @@ import { COLORS, FONTS, icons, SIZES } from '../constants'
 
 
 
-const SearchResultCard = () => {
+const SearchResultCard = ({handlePress}) => {
     return (
         <TouchableOpacity
+
+            onPress={handlePress}
             style={{
                 height: 100,
                 marginHorizontal: SIZES.radius,
