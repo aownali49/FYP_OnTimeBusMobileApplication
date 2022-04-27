@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, Button, Animated, Image, TouchableOpacity, TextInput, FlatList, Modal } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
-import MapView, { Marker } from 'react-native-maps'
+import MapView, { Marker, Polyline } from 'react-native-maps'
 import { COLORS, FONTS, icons, SIZES } from '../constants'
 import SlidingUpPanel from 'rn-sliding-up-panel';
-import { LineDivider, Thumb } from '../components';
+import { LineDivider, Thumb, StopCard } from '../components';
 import SearchResultCard from '../components/SearchResultCard';
 
 const Home = () => {
@@ -29,17 +29,17 @@ const Home = () => {
             address: "losar Sharfoo"
         },
         {
-            id: 1,
+            id: 4,
             name: "Block A",
             address: "losar Sharfoo"
         },
         {
-            id: 2,
+            id: 5,
             name: "Block B",
             address: "losar Sharfoo"
         },
         {
-            id: 3,
+            id: 6,
             name: "Block C",
             address: "losar Sharfoo"
         },
@@ -52,7 +52,7 @@ const Home = () => {
             address: "losar Sharfoo"
         },
         {
-            id: 1,
+            id: 2,
             name: "Block A",
             address: "losar Sharfoo"
         },
@@ -78,33 +78,258 @@ const Home = () => {
     }, []);
 
     function renderSearchResultModal() {
+        const [coordinates] = useState([
+            { latitude: 33.504013, longitude: 73.102201 },
+            { latitude: 33.503686, longitude: 73.100291 }
+        ]);
+
         return (
             <Modal
-                style = {{ flex:1
-                  }
-                  }
                 transparent
                 visible={isResultVisible}
                 animationType='fade'
                 onRequestClose={() => { setResultVisible(!isResultVisible) }}
+                style={{
+                    backgroundColor: COLORS.black
+                }}
             >
-                <View 
-                    style = {{
-                        backgroundColor:COLORS.white,
-                        height:"100%",
-                        width:"100%"
+                <View
+                    style={{
+                        backgroundColor: COLORS.white,
+                        height: "100%",
+                        width: "100%",
                     }}
-                
+
                 >
-                    <Text style = {{
-                        color:COLORS.black,
-                        height:"100%",
-                        width:"100%"
-                    }}>
-                        Result Modal works!
-                    </Text>
+                    <View
+                        style={{
+                            flex: 0.3,
+                        }}
+
+                    >
+                        <MapView
+                            style={{ flex: 1 }}
+                            scrollEnabled={false}
+                            zoomEnabled={false}
+                            rotateEnabled={false}
+                            initialRegion={{
+                                latitude: 33.504013,
+                                longitude: 73.102201,
+                                latitudeDelta: 0.0922,
+                                longitudeDelta: 0.0421,
+                            }}
+                        >
+
+                            <Marker
+                                coordinate={{ latitude: 33.504013, longitude: 73.102201 }}
+
+                            />
+                            <Marker
+                                coordinate={{ latitude: 33.503686, longitude: 73.100291 }}
+
+                            />
+                            <Polyline
+                                coordinates={[{ latitude: 33.504013, longitude: 73.102201 }, { latitude: 33.503686, longitude: 73.100291 }]}
+                                strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+                                strokeColors={['#7F0000']}
+                                strokeWidth={6}
+                            />
+                        </MapView>
+
+                    </View>
+                    <View
+                        style={{
+                            flex: 0.7,
+
+
+                        }}
+                    >
+                        <View
+                            style={{
+                                flex: 1,
+                                backgroundColor: COLORS.mailaWhite,
+                                borderTopStartRadius: 22,
+                                borderTopEndRadius: 22,
+                                borderColor: COLORS.black,
+                                borderWidth: 1,
+                            }}
+                        >
+                            <View
+                                style={{
+                                    position: "absolute",
+                                    width: 390,
+                                    height: 115,
+                                    alignSelf: 'center',
+                                    marginTop: 20,
+
+                                }}
+                            >
+                                <Image
+                                    source={icons.bus3}
+                                    resizeMode="cover"
+                                    style={{
+                                        width: 40,
+                                        height: 40
+                                    }}
+                                />
+                                <Text
+                                    style={{
+                                        position: 'absolute',
+                                        top: 40,
+                                        fontSize: 25,
+                                        color: COLORS.black
+                                    }}
+                                >
+                                    Bahria Town Stop
+                                </Text>
+                                <Text
+                                    style={{
+                                        position: 'absolute',
+                                        top: 70,
+                                        left: 2,
+                                        fontSize: 14,
+                                        color: '#9B9999'
+                                    }}
+                                >
+                                    From <Text style={{ color: '#535353' }}>current location</Text>
+                                </Text>
+                                <View>
+                                    <Image
+                                        source={icons.online}
+                                        resizeMode="cover"
+                                        style={{
+                                            width: 40,
+                                            height: 40,
+                                            position: 'absolute',
+                                            right: 70,
+                                            top: -20,
+
+                                        }}
+                                    />
+                                    <Text
+                                        style={{
+                                            fontSize: 14,
+                                            position: 'absolute',
+                                            right: 14,
+                                            top: -10,
+                                            color: '#4FCF88',
+                                        }}
+                                    >
+                                        On-time
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontSize: 14,
+                                            position: 'absolute',
+                                            right: 4,
+                                            top: 20,
+                                            color: COLORS.black,
+                                        }}
+                                    >
+                                        3 stops • <Text style={{ color: '#4FCF88' }} >25 mins</Text>
+                                    </Text>
+
+                                </View>
+
+
+                            </View>
+
+                            <View style={
+                                {
+                                    position: 'absolute',
+                                    top: 120,
+                                    width: "90%",
+                                    height: 2,
+                                    alignSelf: 'center',
+                                    backgroundColor: '#B6B6B6',
+                                    borderRadius: 2,
+                                }
+                            } />
+
+                            <FlatList
+                                style={{
+                                    top: 125,
+                                }}
+                                data={stopsInfo}
+                                keyExtractor={item => item.id}
+                                showsVerticalScrollIndicator={false}
+                                ItemSeparatorComponent={() => {
+                                    return (
+                                        <LineDivider />
+                                    )
+                                }}
+                                renderItem={({ item, index }) => {
+                                    return (
+                                        // <StopCard data = {item}/>
+
+                                        <View style={{
+
+                                            height: 100,
+                                            width: '100%',
+                                            alignSelf: 'center'
+                                        }}>
+                                            <View
+                                                style={{
+                                                    borderColor: COLORS.black,
+                                                    borderWidth: 1,
+                                                    height: 100,
+                                                    width: '85%',
+                                                    alignSelf: 'flex-end',
+                                                    marginRight: 10,
+                                                    flexDirection: 'row'
+                                                }}
+                                            >
+                                                <View
+                                                    style={{
+                                                        flex: 0.75,
+                                                        borderColor: COLORS.blue,
+                                                        borderWidth: 1,
+                                                    }}
+                                                >
+                                                    <Text>
+                                                        Stop Name Goes here
+                                                    </Text>
+                                                    <Text>
+                                                        Stop Address goes here
+                                                    </Text>
+                                                </View>
+                                                <View
+                                                     style={{
+                                                        flex: 0.25,
+                                                        borderColor: COLORS.blue,
+                                                        borderWidth: 1,
+                                                    }}
+                                                >
+                                                    <Image
+                                                        source={icons.online}
+                                                        resizeMode="cover"
+                                                        style={{
+                                                            height: 25,
+                                                            width: 25,
+
+                                                        }}
+                                                    />
+                                                </View>
+
+
+
+                                            </View>
+
+
+
+
+                                        </View>
+                                    )
+                                }}
+                            />
+
+
+
+
+                        </View>
+                    </View>
                 </View>
-            </Modal>
+            </Modal >
         )
     }
 
@@ -494,7 +719,7 @@ const Home = () => {
                         data={searchResult}
                         renderItem={({ item, index }) => {
                             return (
-                                <SearchResultCard handlePress = { ()=>{setResultVisible(!isResultVisible)}} />
+                                <SearchResultCard handlePress={() => { setResultVisible(!isResultVisible) }} />
                             )
                         }}
 
@@ -516,7 +741,7 @@ const Home = () => {
             {renderSwipeUpModal()}
             {renderSearchBar()}
             {renderSearchModal()}
-            
+
         </View>
     )
 }

@@ -7,6 +7,7 @@ export const COLORS = {
     blue: "#4096FE",
     gray: "#464646",
     lightGray: "#dedede",
+    mailaWhite:'#F3F3F3',
     transparentBlack: 'rgba(0, 0, 0, 0.2)',
     transparentBlack1: 'rgba(0, 0, 0, 0.5)',
 };

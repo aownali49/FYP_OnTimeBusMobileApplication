@@ -9,7 +9,6 @@ const Linedivider = () => {
                 width: "100%",
                 height: 1,
                 backgroundColor: COLORS.lightGray,
-
             }
         }>
 

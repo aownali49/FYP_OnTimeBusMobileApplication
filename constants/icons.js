@@ -8,7 +8,10 @@ const back = require("../assets/icons/back.png");
 const go = require("../assets/icons/go.png");
 const man = require("../assets/icons/man.png");
 const bus2 = require("../assets/icons/bus2.png");
+const bus3 = require("../assets/icons/bus3.png");
 const rightarrow = require("../assets/icons/rightarrow.png");
+const online = require("../assets/icons/online.png");
+
 
 export default {
 bus,
@@ -22,4 +25,6 @@ back,
 go,
 man,
 rightarrow,
+bus3,
+online,
 }
