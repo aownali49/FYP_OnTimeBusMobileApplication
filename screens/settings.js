@@ -1,14 +1,19 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, ImageBackground } from 'react-native'
 import React from 'react'
+import { COLORS, images, SIZES } from '../constants'
 
 const Settings = () => {
   return (
-    <View>
-      <Text>Setting Screen</Text>
-    </View>
+     
+<View></View>
+      
   )
 }
 
 export default Settings
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  backgroundImage: {
+ 
+  }
+})

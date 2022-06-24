@@ -12,6 +12,37 @@ const Home = () => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [isResultVisible, setResultVisible] = useState(false);
     const [dragging, setDragging] = useState(true);
+    const [routeStops,setRouteStops] = useState([
+        
+
+        {
+            stopId: "1",
+            stopName: "IIUI Male-Stop",
+            stopAddress: "Main Rd, H-10/2, IIU, Islamabad",
+            tta:"2 mins",
+        },
+        {
+            stopId: "2",
+            stopName: "Khayaban-e-Johar Stop",
+            stopAddress: "H 8/1 H-8, Islamabad",
+            tta:"10 mins",
+        },
+        {
+            stopId: "3",
+            stopName: "Potohar Stop",
+            stopAddress: "9th Ave, I -8, Islamabad Territory",
+            tta:"15 mins",
+        },
+        {
+            stopId: "4",
+            stopName: "Bahria Town Stop",
+            stopAddress: "Bahria Town Phase VIII, Rawalpindi",
+            tta:"25 mins",
+        },
+        
+    ]);
+
+
     const [stopsInfo, setStopInfo] = useState([
         {
             id: 1,
@@ -150,8 +181,8 @@ const Home = () => {
                                 backgroundColor: COLORS.mailaWhite,
                                 borderTopStartRadius: 22,
                                 borderTopEndRadius: 22,
-                                borderColor: COLORS.black,
-                                borderWidth: 1,
+                                // borderColor: COLORS.black,
+                                // borderWidth: 1,
                             }}
                         >
                             <View
@@ -246,11 +277,15 @@ const Home = () => {
                                 }
                             } />
 
-                            <FlatList
+
+
+                            
+
+                            {/* <FlatList
                                 style={{
                                     top: 125,
                                 }}
-                                data={stopsInfo}
+                                data={routeStops}
                                 keyExtractor={item => item.id}
                                 showsVerticalScrollIndicator={false}
                                 ItemSeparatorComponent={() => {
@@ -260,68 +295,12 @@ const Home = () => {
                                 }}
                                 renderItem={({ item, index }) => {
                                     return (
-                                        // <StopCard data = {item}/>
+                                        <StopCard data = {item}/>
 
-                                        <View style={{
-
-                                            height: 100,
-                                            width: '100%',
-                                            alignSelf: 'center'
-                                        }}>
-                                            <View
-                                                style={{
-                                                    borderColor: COLORS.black,
-                                                    borderWidth: 1,
-                                                    height: 100,
-                                                    width: '85%',
-                                                    alignSelf: 'flex-end',
-                                                    marginRight: 10,
-                                                    flexDirection: 'row'
-                                                }}
-                                            >
-                                                <View
-                                                    style={{
-                                                        flex: 0.75,
-                                                        borderColor: COLORS.blue,
-                                                        borderWidth: 1,
-                                                    }}
-                                                >
-                                                    <Text>
-                                                        Stop Name Goes here
-                                                    </Text>
-                                                    <Text>
-                                                        Stop Address goes here
-                                                    </Text>
-                                                </View>
-                                                <View
-                                                     style={{
-                                                        flex: 0.25,
-                                                        borderColor: COLORS.blue,
-                                                        borderWidth: 1,
-                                                    }}
-                                                >
-                                                    <Image
-                                                        source={icons.online}
-                                                        resizeMode="cover"
-                                                        style={{
-                                                            height: 25,
-                                                            width: 25,
-
-                                                        }}
-                                                    />
-                                                </View>
-
-
-
-                                            </View>
-
-
-
-
-                                        </View>
+                                        
                                     )
                                 }}
-                            />
+                            /> */}
 
 
 
@@ -573,8 +552,8 @@ const Home = () => {
                         style={{
                             paddingTop: 50,
                             alignItems: 'center',
-                            borderColor: COLORS.black,
-                            borderWidth: 1
+                            // borderColor: COLORS.black,
+                            // borderWidth: 1
                         }}
                     >
                         <View
