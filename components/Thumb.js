@@ -6,7 +6,10 @@ const Thumb = () => {
     return (
         <View
             style={{
-                paddingTop: 5,
+                top:5,
+                // borderColor: COLORS.blue,
+                // borderWidth:1,
+                // paddingTop: 5,
                 width: "100%",
                 justifyContent: "center",
                 alignItems: "center",

@@ -11,11 +11,14 @@ const bus2 = require("../assets/icons/bus2.png");
 const bus3 = require("../assets/icons/bus3.png");
 const rightarrow = require("../assets/icons/rightarrow.png");
 const online = require("../assets/icons/online.png");
+const pinpoint  = require("../assets/icons/placeholder.png")
+const busStop = require("../assets/icons/bus-stop2.png");
 
 
 export default {
 bus,
 bus2,
+busStop,
 profile,
 settings,
 side_drawer,
@@ -27,4 +30,5 @@ man,
 rightarrow,
 bus3,
 online,
+pinpoint
 }

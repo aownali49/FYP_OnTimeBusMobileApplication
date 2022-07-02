@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import MapView, { Marker, Polyline } from 'react-native-maps'
 import { COLORS, FONTS, icons, SIZES } from '../constants'
 import SlidingUpPanel from 'rn-sliding-up-panel';
-import { LineDivider, Thumb, StopCard } from '../components';
+import { LineDivider, Thumb, StopCard, NearbyStopsComponent } from '../components';
 import SearchResultCard from '../components/SearchResultCard';
 
 const Home = () => {
@@ -12,67 +12,92 @@ const Home = () => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [isResultVisible, setResultVisible] = useState(false);
     const [dragging, setDragging] = useState(true);
-    const [routeStops,setRouteStops] = useState([
-        
+    const _draggedValue = useRef(new Animated.Value(0)).current;
+
+    const [routeStops, setRouteStops] = useState([
+
 
         {
             stopId: "1",
             stopName: "IIUI Male-Stop",
             stopAddress: "Main Rd, H-10/2, IIU, Islamabad",
-            tta:"2 mins",
+            tta: "2 mins",
         },
         {
             stopId: "2",
             stopName: "Khayaban-e-Johar Stop",
             stopAddress: "H 8/1 H-8, Islamabad",
-            tta:"10 mins",
+            tta: "10 mins",
         },
         {
             stopId: "3",
             stopName: "Potohar Stop",
             stopAddress: "9th Ave, I -8, Islamabad Territory",
-            tta:"15 mins",
+            tta: "15 mins",
         },
         {
             stopId: "4",
             stopName: "Bahria Town Stop",
             stopAddress: "Bahria Town Phase VIII, Rawalpindi",
-            tta:"25 mins",
+            tta: "25 mins",
         },
-        
+
     ]);
-
-
     const [stopsInfo, setStopInfo] = useState([
         {
             id: 1,
-            name: "Block A",
-            address: "losar Sharfoo"
+            name: "Bahria Town Stop",
+            address: "Circular Drive, Rafi Block",
+            distance: '100m'
         },
         {
             id: 2,
-            name: "Block B",
-            address: "losar Sharfoo"
+            name: "IIUI Boys Campus",
+            address: "H-10/2 Islamabad",
+            distance: '100m'
+
         },
         {
             id: 3,
-            name: "Block C",
-            address: "losar Sharfoo"
+            name: "Saddar Stop",
+            address: "Bank Road, Saddar, Rawalpindi",
+            distance: '100m'
+
         },
         {
             id: 4,
-            name: "Block A",
-            address: "losar Sharfoo"
+            name: "Islamabad Airport Stop",
+            address: "Fatehjang, Islamabad",
+            distance: '100m'
+
         },
         {
             id: 5,
-            name: "Block B",
-            address: "losar Sharfoo"
+            name: "PWD Stop",
+            address: "PWD, Rawalpindi",
+            distance: '100m'
+
         },
         {
             id: 6,
-            name: "Block C",
-            address: "losar Sharfoo"
+            name: "Umer Block",
+            address: "Bahria Town Phase VIII",
+            distance: '100m'
+
+        },
+        {
+            id: 7,
+            name: "Usman Block",
+            address: "Bahria Town Phase VIII",
+            distance: '100m'
+
+        },
+        {
+            id: 8,
+            name: "Civic Center Ph IV",
+            address: "Bahria Town Phase IV",
+            distance: '100m'
+
         },
 
     ])
@@ -91,15 +116,9 @@ const Home = () => {
 
     ])
 
-
-
-    const _draggedValue = useRef(new Animated.Value(0)).current;
-
-
     useEffect(() => {
         _draggedValue.addListener((valueObject) => {
             if (valueObject.value > SIZES.height) { setDragging(false); }
-
         })
 
         return () => {
@@ -107,6 +126,7 @@ const Home = () => {
         }
 
     }, []);
+
 
     function renderSearchResultModal() {
         const [coordinates] = useState([
@@ -279,7 +299,7 @@ const Home = () => {
 
 
 
-                            
+
 
                             {/* <FlatList
                                 style={{
@@ -311,9 +331,6 @@ const Home = () => {
             </Modal >
         )
     }
-
-
-
 
     function renderMap() {
         return (
@@ -362,77 +379,71 @@ const Home = () => {
                     snappingPoints={[SIZES.height]}
                     height={SIZES.height}
                     friction={0.7}
-
                     onBottomReached={() => { setDragging(true) }}
-
-
-
                 >
-
                     <View style={{
-                        flex: 1, backgroundColor: COLORS.white, borderTopLeftRadius: SIZES.radius * 2,
+                        flex: 1, backgroundColor: COLORS.stopModalGray, borderTopLeftRadius: SIZES.radius * 2,
                         borderTopRightRadius: SIZES.radius * 2
                     }}>
-
+                        {/* List Header: Current Address */}
+                        <View style={{
+                            // borderColor:COLORS.black,
+                            // borderWidth:1,
+                            // // top:15,
+                            height: 60,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <Image
+                                source={icons.pinpoint}
+                                style={{
+                                    position: 'absolute',
+                                    left: 10,
+                                    width: 25,
+                                    height: 25,
+                                    // borderColor:COLORS.black,
+                                    // borderWidth: 1,
+                                }}
+                            />
+                            <Text style={{
+                                fontSize: 20,
+                                color: COLORS.black,
+                                marginLeft: 10,
+                                // borderColor:COLORS.black,
+                                // borderWidth: 1,
+                            }}
+                            >
+                                657, Rafi Block, Bahria Phase VIII
+                            </Text>
+                        </View>
+                        {/* List of Nearyby Stops */}
                         <FlatList
                             data={stopsInfo}
                             keyExtractor={item => item.id}
                             showsVerticalScrollIndicator={false}
                             ListHeaderComponent={() => {
                                 return (
-                                    <Thumb />
+                                    <View>
+                                        <Text 
+                                            style={{
+                                                // borderColor:COLORS.black,
+                                                // borderWidth:1,
+                                                color:COLORS.black,
+                                                paddingLeft:15,
+                                                fontSize:17,
+                                                fontWeight:'600'
+                                            }}
+                                        >
+                                            Near by Stops:
+                                        </Text>
+                                    </View>
+                                   
                                 )
                             }}
-                            ItemSeparatorComponent={() => {
-                                return (
-                                    <LineDivider />
-                                )
-                            }}
-
                             renderItem={({ item, index }) => {
                                 return (
-                                    <View
-                                        style={{
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            paddingTop: SIZES.padding,
-                                            paddingLeft: SIZES.padding * 0.3,
-                                        }}
-                                    >
-                                        <View
-                                            style={{
-                                                width: 35,
-                                                height: 35
-                                            }}
-                                        >
-                                            <Image
-                                                source={icons.bus}
-                                                resizeMode="cover"
-                                                style={{
-                                                    width: 25,
-                                                    height: 25
-                                                }}
-                                            />
-                                        </View>
-                                        <View
-                                            style={{
-                                                flex: 1
-                                            }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    color: COLORS.black,
-                                                    ...FONTS.body3
-                                                }}
-                                            >{item?.name}</Text>
-                                            <Text
-                                                style={{
-                                                    color: COLORS.black,
-                                                    ...FONTS.body4
-                                                }}
-                                            >{item?.address}</Text>
-                                        </View>
-                                    </View>
+                                    <NearbyStopsComponent data={{ item, index }} />
                                 )
                             }}
                         />
@@ -527,7 +538,6 @@ const Home = () => {
                 }}>
                     <View
                         style={{
-
                             width: "100%",
                             height: 30,
                         }}
@@ -693,19 +703,13 @@ const Home = () => {
                     backgroundColor: COLORS.gray
                 }}>
                     <FlatList
-
-
                         data={searchResult}
                         renderItem={({ item, index }) => {
                             return (
                                 <SearchResultCard handlePress={() => { setResultVisible(!isResultVisible) }} />
                             )
                         }}
-
                     >
-
-
-
                     </FlatList>
 
                 </View>
@@ -720,7 +724,6 @@ const Home = () => {
             {renderSwipeUpModal()}
             {renderSearchBar()}
             {renderSearchModal()}
-
         </View>
     )
 }
