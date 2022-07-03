@@ -11,6 +11,10 @@ export const COLORS = {
     stopModalGray: '#E6E6E6',
     transparentBlack: 'rgba(0, 0, 0, 0.2)',
     transparentBlack1: 'rgba(0, 0, 0, 0.5)',
+    slateGray:"#2C2E35",
+    AlmostWhite:'#FFFEFE',
+    LoginGreen:"#9CE3A8",
+    RegisterGray:"#909090"
 };
 export const SIZES = {
     // global sizes
