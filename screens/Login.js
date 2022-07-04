@@ -4,14 +4,6 @@ import { dummy, COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Card } from 'react-native-shadow-cards';
 
 
-// import { logoBackground } from '../assets/images'
-
-const getFonts = () => {
-  Font.loadAsync({
-    "UbuntuLight": require("../assets/fonts/Ubuntu-Light.ttf")
-  })
-}
-
 const Login = ({ navigation }) => {
   return (
     <View
@@ -76,7 +68,7 @@ const Login = ({ navigation }) => {
             style={styles.PasswordInputStyle}
           ></TextInput>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Home')}
+            onPress={() => navigation.navigate('HomeStack')}
             style={styles.LoginButtonStyle}
           >
             <Text

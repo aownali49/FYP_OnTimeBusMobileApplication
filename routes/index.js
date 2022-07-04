@@ -92,9 +92,9 @@ const BottomTabShow = () => {
 const AuthStackShow = () => {
     return (
         <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+            <AuthStack.Screen name="Splash" component={Splash} />
             <AuthStack.Screen name="Login" component={Login} />
             <AuthStack.Screen name="Signup" component={Signup} />
-            <AuthStack.Screen name="Splash" component={Splash} />
         </AuthStack.Navigator>
     )
 }
@@ -103,8 +103,8 @@ const Index = () => {
     return (
         <NavigationContainer>
             <BaseStack.Navigator screenOptions={{ headerShown: false }}>
-                <BaseStack.Screen name="Authentication" component={AuthStackShow} />
-                <BaseStack.Screen name="Home" component={BottomTabShow} />
+                <BaseStack.Screen name="AuthenticationStack" component={AuthStackShow} />
+                <BaseStack.Screen name="HomeStack" component={BottomTabShow} />
             </BaseStack.Navigator>
         </NavigationContainer>
     )
