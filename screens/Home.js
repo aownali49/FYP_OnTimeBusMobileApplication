@@ -5,7 +5,8 @@ import { COLORS, FONTS, icons, SIZES } from '../constants'
 import SlidingUpPanel from 'rn-sliding-up-panel';
 import { LineDivider, Thumb, StopCard, NearbyStopsComponent } from '../components';
 import SearchResultCard from '../components/SearchResultCard';
-
+import GOOGLE_MAPS_API from './GoogleMapsAPI';
+import MapViewDirections from 'react-native-maps-directions';
 const Home = () => {
 
     let _panel = useRef(null);
@@ -19,28 +20,55 @@ const Home = () => {
 
         {
             stopId: "1",
-            stopName: "IIUI Male-Stop",
-            stopAddress: "Main Rd, H-10/2, IIU, Islamabad",
+            stopName: "IIUI Iqra College",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
             tta: "2 mins",
+            stopCoordinates: {
+                latitude: 33.659757,
+                longitude: 73.038013,
+            }
         },
         {
             stopId: "2",
-            stopName: "Khayaban-e-Johar Stop",
-            stopAddress: "H 8/1 H-8, Islamabad",
+            stopName: "Girls Hostel E,F,G Block",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
             tta: "10 mins",
+            stopCoordinates: {
+                latitude: 33.659123,
+                longitude: 73.034217,
+            }
         },
         {
             stopId: "3",
-            stopName: "Potohar Stop",
-            stopAddress: "9th Ave, I -8, Islamabad Territory",
+            stopName: "Girl's Hostel Stop",
+            stopAddress: "Imam Abu Hanifa Rd, H-10, Islamabad, ICT, Pakistan",
             tta: "15 mins",
+            stopCoordinates: {
+                latitude: 33.657259,
+                longitude: 73.031897,
+            }
         },
         {
             stopId: "4",
-            stopName: "Bahria Town Stop",
-            stopAddress: "Bahria Town Phase VIII, Rawalpindi",
+            stopName: "Water Tank Stop",
+            stopAddress: "Imam Abu Hanifa Rd, H-10, Islamabad, ICT, Pakistan",
             tta: "25 mins",
+            stopCoordinates: {
+                latitude: 33.655689,
+                longitude: 73.023094,
+            }
+            
         },
+        {
+            stopId: "5",
+            stopName: "Boy's Hostel Stop",
+            stopAddress: "H-10, Islamabad, Islamabad Capital Territory, Pakistan",
+            tta: "25 mins",
+            stopCoordinates: {
+                latitude: 33.658073,
+                longitude: 73.022236,
+            }
+        }
 
     ]);
     const [stopsInfo, setStopInfo] = useState([
@@ -128,12 +156,30 @@ const Home = () => {
     }, []);
 
 
-    function renderSearchResultModal() {
-        const [coordinates] = useState([
-            { latitude: 33.504013, longitude: 73.102201 },
-            { latitude: 33.503686, longitude: 73.100291 }
-        ]);
 
+    function renderSearchResultModal() {
+        // const [coordinates] = useState([
+        //     { latitude: 33.504013, longitude: 73.102201 },
+        //     { latitude: 33.503686, longitude: 73.100291 }
+        // ]);
+
+        const [coordinates, setCoordinates] = useState({
+            pickupCoords: {
+                latitude: 33.504013,
+                longitude: 73.102201,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421
+            },
+            dropoffCoords: {
+                latitude: 33.503686,
+                longitude: 73.100291,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421
+            }
+        });
+        const { pickupCoords, dropoffCoords } = coordinates;
+
+        const mapRef = useRef();
         return (
             <Modal
                 transparent
@@ -154,50 +200,94 @@ const Home = () => {
                 >
                     <View
                         style={{
-                            flex: 0.3,
+                            flex: 1,
                         }}
 
                     >
                         <MapView
+                            ref={mapRef}
                             style={{ flex: 1 }}
-                            scrollEnabled={false}
-                            zoomEnabled={false}
+                            scrollEnabled={true}
+                            zoomEnabled={true}
                             rotateEnabled={false}
-                            initialRegion={{
-                                latitude: 33.504013,
-                                longitude: 73.102201,
-                                latitudeDelta: 0.0922,
-                                longitudeDelta: 0.0421,
-                            }}
+                            initialRegion={pickupCoords}
+
                         >
-
-                            <Marker
+                            {
+                                routeStops.map(stop => {
+                                    return(
+                                        <Marker
+                                            coordinate={stop.stopCoordinates}
+                                        />
+                                    )
+                                })
+                            }
+                            {/* <Marker
                                 coordinate={{ latitude: 33.504013, longitude: 73.102201 }}
+                            /> */}
+                            {
+                                routeStops.map(stop => {
+                                    return (
+                                        <MapViewDirections
+                                            origin={stop.stopCoordinates}
+                                            destination={routeStops[routeStops.length-1].stopCoordinates}
+                                            apikey={GOOGLE_MAPS_API}
+                                            strokeWidth={3}
+                                            strokeColor={COLORS.black}
+                                            optimizeWaypoints={true}
+                                            onReady={result => {
+                                                mapRef.current.fitToCoordinates(result.coordinates,
+                                                    {
+                                                        edgePadding: {
+                                                            right: 50,
+                                                            bottom: 20,
+                                                            left: 50,
+                                                            top: 20
+                                                        }
+                                                    })
+                                            }}
+                                        />
+                                    )
+                                })
+                            }
+                            {/* <MapViewDirections
+                                origin={pickupCoords}
+                                destination={dropoffCoords}
+                                apikey={GOOGLE_MAPS_API}
+                                strokeWidth={3}
+                                strokeColor={COLORS.black}
+                                optimizeWaypoints={true}
+                                onReady={result => {
+                                    mapRef.current.fitToCoordinates(result.coordinates,
+                                        {
+                                            edgePadding: {
+                                                right: 50,
+                                                bottom: 20,
+                                                left: 50,
+                                                top: 20
+                                            }
+                                        })
+                                }}
+                            /> */}
 
-                            />
-                            <Marker
-                                coordinate={{ latitude: 33.503686, longitude: 73.100291 }}
-
-                            />
-                            <Polyline
+                            {/* <Polyline
                                 coordinates={[{ latitude: 33.504013, longitude: 73.102201 }, { latitude: 33.503686, longitude: 73.100291 }]}
                                 strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
                                 strokeColors={['#7F0000']}
                                 strokeWidth={6}
-                            />
+                            /> */}
                         </MapView>
-
                     </View>
                     <View
                         style={{
-                            flex: 0.7,
-
-
+                            flex: 2,
                         }}
                     >
                         <View
                             style={{
                                 flex: 1,
+                                // width:SIZES.width-SIZES.padding,
+                                // height:SIZES.height,
                                 backgroundColor: COLORS.mailaWhite,
                                 borderTopStartRadius: 22,
                                 borderTopEndRadius: 22,
@@ -208,11 +298,12 @@ const Home = () => {
                             <View
                                 style={{
                                     position: "absolute",
-                                    width: 390,
-                                    height: 115,
+                                    width: SIZES.width - SIZES.padding,
+                                    // height: 10,
                                     alignSelf: 'center',
                                     marginTop: 20,
-
+                                    // borderColor: COLORS.black,
+                                    // borderWidth: 1,
                                 }}
                             >
                                 <Image
@@ -228,7 +319,8 @@ const Home = () => {
                                         position: 'absolute',
                                         top: 40,
                                         fontSize: 25,
-                                        color: COLORS.black
+                                        color: COLORS.black,
+                                        fontFamily: "Ubuntu-Regular"
                                     }}
                                 >
                                     Bahria Town Stop
@@ -239,10 +331,11 @@ const Home = () => {
                                         top: 70,
                                         left: 2,
                                         fontSize: 14,
-                                        color: '#9B9999'
+                                        color: '#9B9999',
+                                        fontFamily: "Ubuntu-Regular"
                                     }}
                                 >
-                                    From <Text style={{ color: '#535353' }}>current location</Text>
+                                    From <Text style={{ color: '#535353', fontFamily: "Ubuntu-Regular" }}>current location</Text>
                                 </Text>
                                 <View>
                                     <Image
@@ -264,6 +357,7 @@ const Home = () => {
                                             right: 14,
                                             top: -10,
                                             color: '#4FCF88',
+                                            fontFamily: "Ubuntu-Regular"
                                         }}
                                     >
                                         On-time
@@ -275,35 +369,29 @@ const Home = () => {
                                             right: 4,
                                             top: 20,
                                             color: COLORS.black,
+                                            fontFamily: "Ubuntu-Regular"
                                         }}
                                     >
-                                        3 stops • <Text style={{ color: '#4FCF88' }} >25 mins</Text>
+                                        3 stops • <Text style={{ color: '#4FCF88', fontFamily: "Ubuntu-Regular" }} >25 mins</Text>
                                     </Text>
-
                                 </View>
-
-
                             </View>
-
                             <View style={
                                 {
                                     position: 'absolute',
                                     top: 120,
-                                    width: "90%",
+                                    width: SIZES.width - SIZES.padding,
                                     height: 2,
                                     alignSelf: 'center',
                                     backgroundColor: '#B6B6B6',
                                     borderRadius: 2,
                                 }
                             } />
-
-
-
-
-
-                            {/* <FlatList
+                            <FlatList
                                 style={{
                                     top: 125,
+                                    marginBottom: 150
+                                    // bottom:
                                 }}
                                 data={routeStops}
                                 keyExtractor={item => item.id}
@@ -315,16 +403,10 @@ const Home = () => {
                                 }}
                                 renderItem={({ item, index }) => {
                                     return (
-                                        <StopCard data = {item}/>
-
-                                        
+                                        <StopCard data={item} />
                                     )
                                 }}
-                            /> */}
-
-
-
-
+                            />
                         </View>
                     </View>
                 </View>
@@ -410,6 +492,7 @@ const Home = () => {
                                 fontSize: 20,
                                 color: COLORS.black,
                                 marginLeft: 10,
+                                fontFamily: "Ubuntu-Regular"
                                 // borderColor:COLORS.black,
                                 // borderWidth: 1,
                             }}
@@ -419,26 +502,29 @@ const Home = () => {
                         </View>
                         {/* List of Nearyby Stops */}
                         <FlatList
+                            style={{
+                                marginBottom: 175
+                            }}
                             data={stopsInfo}
                             keyExtractor={item => item.id}
                             showsVerticalScrollIndicator={false}
                             ListHeaderComponent={() => {
                                 return (
                                     <View>
-                                        <Text 
+                                        <Text
                                             style={{
                                                 // borderColor:COLORS.black,
                                                 // borderWidth:1,
-                                                color:COLORS.black,
-                                                paddingLeft:15,
-                                                fontSize:17,
-                                                fontWeight:'600'
+                                                color: COLORS.black,
+                                                paddingLeft: 15,
+                                                fontSize: 17,
+                                                fontWeight: '600'
                                             }}
                                         >
                                             Near by Stops:
                                         </Text>
                                     </View>
-                                   
+
                                 )
                             }}
                             renderItem={({ item, index }) => {
@@ -455,7 +541,6 @@ const Home = () => {
             </View>
         )
     }
-
     function renderSearchBar() {
         return (
             <View style={styles.SEARCHBAR}>

@@ -42,6 +42,7 @@ const StopCard = ({ data }) => {
                         style={{
                             color: COLORS.black,
                             fontSize: 20,
+                            fontFamily: "Ubuntu-Regular"
                         }}
                     >
                         {stopName}
@@ -50,6 +51,7 @@ const StopCard = ({ data }) => {
                         style={{
                             color: '#9B9999',
                             fontSize: 14,
+                            fontFamily: "Ubuntu-Regular"
                         }}
                     >
                         {/* Stop Address goes here */}
@@ -78,6 +80,7 @@ const StopCard = ({ data }) => {
                             color:'#4FCF88',
                             fontSize: 14,
                             alignSelf: 'center',
+                            fontFamily: "Ubuntu-Regular"
                         }}
                     >
                         {tta}
