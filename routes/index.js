@@ -1,13 +1,15 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from 'react'
 import { NavigationContainer } from "@react-navigation/native";
-import { HomeScreen, SettingScreen, ProfileScreen, Home, Login, Signup,Splash } from "../screens";
+import { HomeScreen, SettingScreen, ProfileScreen, Home, Login, Signup,Splash,Balance } from "../screens";
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { COLORS, FONTS, icons } from "../constants/index"
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const BottomTab = createBottomTabNavigator();
 const AuthStack = createNativeStackNavigator();
 const BaseStack = createNativeStackNavigator();
+
+const SettingsStack =createNativeStackNavigator();
 
 const BottomTabShow = () => {
 
@@ -47,9 +49,7 @@ const BottomTabShow = () => {
                     )
                 }}
             />
-            <BottomTab.Screen
-                name="Home"
-                component={Home}
+            <BottomTab.Screen name="Home" component={Home}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -66,8 +66,7 @@ const BottomTabShow = () => {
                     )
                 }}
             />
-            <BottomTab.Screen name="Settings" component={SettingScreen}
-
+            <BottomTab.Screen name="Settings" component={SettingsStackShow}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -87,6 +86,17 @@ const BottomTabShow = () => {
         </BottomTab.Navigator>
     )
 
+}
+
+const SettingsStackShow =()=>{
+    return(
+        <SettingsStack.Navigator screenOptions={{headerShown:false}}>
+            <SettingsStack.Screen  name="Settings" component={SettingScreen}></SettingsStack.Screen>
+            <SettingsStack.Screen  name="Balance" component={Balance}></SettingsStack.Screen>
+            <SettingsStack.Screen  name="Balance3" component={Balance}></SettingsStack.Screen>
+            <SettingsStack.Screen  name="Balance4" component={Balance}></SettingsStack.Screen>
+        </SettingsStack.Navigator>
+    )
 }
 
 const AuthStackShow = () => {

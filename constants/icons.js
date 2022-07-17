@@ -13,6 +13,12 @@ const rightarrow = require("../assets/icons/rightarrow.png");
 const online = require("../assets/icons/online.png");
 const pinpoint  = require("../assets/icons/placeholder.png")
 const busStop = require("../assets/icons/bus-stop2.png");
+const accSettings = require("../assets/icons/acc-settings.png");
+const notification = require("../assets/icons/notifications.png");
+const help = require("../assets/icons/help.png");
+const balance = require("../assets/icons/balance-large.png");
+const about = require("../assets/icons/about.png");
+
 
 
 export default {
@@ -30,5 +36,10 @@ man,
 rightarrow,
 bus3,
 online,
-pinpoint
+pinpoint,
+accSettings,
+notification,
+help,
+balance,
+about
 }
