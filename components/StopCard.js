@@ -2,12 +2,13 @@ import { StyleSheet, Text, View, Image, } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
 import { COLORS, FONTS, icons, SIZES } from '../constants'
 
-const StopCard = ({ data }) => {
+const StopCard = ({ data, destination }) => {
 
     const stopId = data.stopId;
     const stopName= data.stopName;
     const stopAddress= data.stopAddress;
     const tta=data.tta;
+    
      
     // console.log(data.tta);
     
@@ -40,9 +41,9 @@ const StopCard = ({ data }) => {
                 >
                     <Text
                         style={{
-                            color: COLORS.black,
+                            color:destination?'#4FCF88': COLORS.black,
                             fontSize: 20,
-                            fontFamily: "Ubuntu-Regular"
+                            fontFamily: destination?"Ubuntu-Bold": "Ubuntu-Regular",
                         }}
                     >
                         {stopName}
@@ -51,7 +52,8 @@ const StopCard = ({ data }) => {
                         style={{
                             color: '#9B9999',
                             fontSize: 14,
-                            fontFamily: "Ubuntu-Regular"
+                            fontFamily: destination?"Ubuntu-Bold": "Ubuntu-Regular",
+
                         }}
                     >
                         {/* Stop Address goes here */}

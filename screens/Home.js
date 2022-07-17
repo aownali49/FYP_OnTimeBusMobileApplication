@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, Animated, Image, TouchableOpacity, TextInput, FlatList, Modal } from 'react-native'
+import { StyleSheet, Text, View, Button, Animated, Image, TouchableOpacity, TextInput, FlatList, Modal, Pressable } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
 import MapView, { Marker, Polyline } from 'react-native-maps'
 import { COLORS, FONTS, icons, SIZES } from '../constants'
@@ -14,14 +14,17 @@ const Home = () => {
     const [isResultVisible, setResultVisible] = useState(false);
     const [dragging, setDragging] = useState(true);
     const _draggedValue = useRef(new Animated.Value(0)).current;
+    const [selectedId, setSelectedId] = useState(null);
+    const [refreshing, setRefreshing] = useState(false);
+    useEffect(() => { }, [selectedId])
+    const _mapRef = useRef(null);
 
     const [routeStops, setRouteStops] = useState([
-
-
         {
             stopId: "1",
             stopName: "IIUI Iqra College",
             stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
             tta: "2 mins",
             stopCoordinates: {
                 latitude: 33.659757,
@@ -32,6 +35,7 @@ const Home = () => {
             stopId: "2",
             stopName: "Girls Hostel E,F,G Block",
             stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
             tta: "10 mins",
             stopCoordinates: {
                 latitude: 33.659123,
@@ -42,6 +46,7 @@ const Home = () => {
             stopId: "3",
             stopName: "Girl's Hostel Stop",
             stopAddress: "Imam Abu Hanifa Rd, H-10, Islamabad, ICT, Pakistan",
+            distance: "",
             tta: "15 mins",
             stopCoordinates: {
                 latitude: 33.657259,
@@ -52,17 +57,19 @@ const Home = () => {
             stopId: "4",
             stopName: "Water Tank Stop",
             stopAddress: "Imam Abu Hanifa Rd, H-10, Islamabad, ICT, Pakistan",
+            distance: "",
             tta: "25 mins",
             stopCoordinates: {
                 latitude: 33.655689,
                 longitude: 73.023094,
             }
-            
+
         },
         {
             stopId: "5",
             stopName: "Boy's Hostel Stop",
             stopAddress: "H-10, Islamabad, Islamabad Capital Territory, Pakistan",
+            distance: "",
             tta: "25 mins",
             stopCoordinates: {
                 latitude: 33.658073,
@@ -73,77 +80,77 @@ const Home = () => {
     ]);
     const [stopsInfo, setStopInfo] = useState([
         {
-            id: 1,
-            name: "Bahria Town Stop",
-            address: "Circular Drive, Rafi Block",
-            distance: '100m'
+            stopId: "1",
+            stopName: "IIUI Iqra College",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "2 mins",
+            stopCoordinates: {
+                latitude: 33.659757,
+                longitude: 73.038013,
+            }
         },
         {
-            id: 2,
-            name: "IIUI Boys Campus",
-            address: "H-10/2 Islamabad",
-            distance: '100m'
+            stopId: "2",
+            stopName: "Girls Hostel E,F,G Block",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "10 mins",
+            stopCoordinates: {
+                latitude: 33.659123,
+                longitude: 73.034217,
+            }
+        },
+        {
+            stopId: "3",
+            stopName: "Girl's Hostel Stop",
+            stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
+            distance: "",
+            tta: "15 mins",
+            stopCoordinates: {
+                latitude: 33.657259,
+                longitude: 73.031897,
+            }
+        },
+        {
+            stopId: "4",
+            stopName: "Water Tank Stop",
+            stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
+            distance: "",
+            tta: "25 mins",
+            stopCoordinates: {
+                latitude: 33.655689,
+                longitude: 73.023094,
+            }
 
         },
         {
-            id: 3,
-            name: "Saddar Stop",
-            address: "Bank Road, Saddar, Rawalpindi",
-            distance: '100m'
-
-        },
-        {
-            id: 4,
-            name: "Islamabad Airport Stop",
-            address: "Fatehjang, Islamabad",
-            distance: '100m'
-
-        },
-        {
-            id: 5,
-            name: "PWD Stop",
-            address: "PWD, Rawalpindi",
-            distance: '100m'
-
-        },
-        {
-            id: 6,
-            name: "Umer Block",
-            address: "Bahria Town Phase VIII",
-            distance: '100m'
-
-        },
-        {
-            id: 7,
-            name: "Usman Block",
-            address: "Bahria Town Phase VIII",
-            distance: '100m'
-
-        },
-        {
-            id: 8,
-            name: "Civic Center Ph IV",
-            address: "Bahria Town Phase IV",
-            distance: '100m'
-
-        },
+            stopId: "5",
+            stopName: "Boy's Hostel Stop",
+            stopAddress: "H-10, ICT, Pakistan",
+            distance: "",
+            tta: "25 mins",
+            stopCoordinates: {
+                latitude: 33.658073,
+                longitude: 73.022236,
+            }
+        }
 
     ])
     const [searchResult, setSearchResult] = useState([
         {
-            id: 1,
-            name: "Block A",
+            stopId: 1,
+            stopName: "Block A",
             address: "losar Sharfoo"
         },
         {
-            id: 2,
-            name: "Block A",
+            stopId: 2,
+            stopName: "Block A",
             address: "losar Sharfoo"
         },
-
-
     ])
 
+    //Re-Renders when Modal Changes
     useEffect(() => {
         _draggedValue.addListener((valueObject) => {
             if (valueObject.value > SIZES.height) { setDragging(false); }
@@ -152,10 +159,7 @@ const Home = () => {
         return () => {
             _draggedValue.removeAllListeners();
         }
-
     }, []);
-
-
 
     function renderSearchResultModal() {
         // const [coordinates] = useState([
@@ -200,37 +204,36 @@ const Home = () => {
                 >
                     <View
                         style={{
-                            flex: 1,
+                            // flex: ,
+                            height: SIZES.height / 3
                         }}
 
                     >
                         <MapView
                             ref={mapRef}
                             style={{ flex: 1 }}
-                            scrollEnabled={true}
-                            zoomEnabled={true}
+                            scrollEnabled={false}
+                            zoomEnabled={false}
                             rotateEnabled={false}
                             initialRegion={pickupCoords}
 
                         >
                             {
                                 routeStops.map(stop => {
-                                    return(
+                                    return (
                                         <Marker
+
                                             coordinate={stop.stopCoordinates}
                                         />
                                     )
                                 })
                             }
-                            {/* <Marker
-                                coordinate={{ latitude: 33.504013, longitude: 73.102201 }}
-                            /> */}
                             {
                                 routeStops.map(stop => {
                                     return (
                                         <MapViewDirections
                                             origin={stop.stopCoordinates}
-                                            destination={routeStops[routeStops.length-1].stopCoordinates}
+                                            destination={routeStops[routeStops.length - 1].stopCoordinates}
                                             apikey={GOOGLE_MAPS_API}
                                             strokeWidth={3}
                                             strokeColor={COLORS.black}
@@ -239,9 +242,9 @@ const Home = () => {
                                                 mapRef.current.fitToCoordinates(result.coordinates,
                                                     {
                                                         edgePadding: {
-                                                            right: 50,
+                                                            right: 100,
                                                             bottom: 20,
-                                                            left: 50,
+                                                            left: 100,
                                                             top: 20
                                                         }
                                                     })
@@ -281,6 +284,8 @@ const Home = () => {
                     <View
                         style={{
                             flex: 2,
+                            top: -15,
+                            marginBottom: -15
                         }}
                     >
                         <View
@@ -323,7 +328,7 @@ const Home = () => {
                                         fontFamily: "Ubuntu-Regular"
                                     }}
                                 >
-                                    Bahria Town Stop
+                                    {routeStops[routeStops.length - 1].stopName}
                                 </Text>
                                 <Text
                                     style={{
@@ -403,7 +408,7 @@ const Home = () => {
                                 }}
                                 renderItem={({ item, index }) => {
                                     return (
-                                        <StopCard data={item} />
+                                        <StopCard data={item} destination={index == routeStops.length - 1} />
                                     )
                                 }}
                             />
@@ -420,6 +425,7 @@ const Home = () => {
             <View style={styles.MAP}>
                 <RenderCenterLocation />
                 <MapView
+                    ref={_mapRef}
                     style={{ flex: 1 }}
                     initialRegion={{
                         latitude: 33.504013,
@@ -429,7 +435,16 @@ const Home = () => {
                     }}
                 >
 
-                    <Marker
+                    {
+                        stopsInfo.map(item => {
+                            return (
+                                <Marker
+                                    coordinate={item.stopCoordinates}
+                                />
+                            )
+                        })
+                    }
+                    {/* <Marker
                         coordinate={{ latitude: 33.504013, longitude: 73.102201 }}
 
                     />
@@ -440,7 +455,7 @@ const Home = () => {
                     <Marker
                         coordinate={{ latitude: 33.505569, longitude: 73.092765 }}
 
-                    />
+                    /> */}
 
                 </MapView>
             </View>
@@ -448,13 +463,14 @@ const Home = () => {
     }
 
     function renderSwipeUpModal() {
+
         return (
             <View style={styles.MODAL}>
                 <SlidingUpPanel
                     ref={c => { _panel = c; }}
                     allowDragging={dragging}
                     draggableRange={{
-                        top: SIZES.height - 120,
+                        top: SIZES.height - 130,
                         bottom: SIZES.height / 3,
                     }}
                     animatedValue={_draggedValue}
@@ -503,10 +519,21 @@ const Home = () => {
                         {/* List of Nearyby Stops */}
                         <FlatList
                             style={{
-                                marginBottom: 175
+                                marginBottom: 175,
+                                // borderColor:COLORS.black,
+                                // borderWidth:1,
+                                // margin:10
                             }}
                             data={stopsInfo}
                             keyExtractor={item => item.id}
+                            extraData={selectedId}
+                            refreshing={refreshing}
+                            onRefresh={() => {
+                                setRefreshing(true);
+                                setTimeout(() => {
+                                    setRefreshing(false);
+                                }, 2000)
+                            }}
                             showsVerticalScrollIndicator={false}
                             ListHeaderComponent={() => {
                                 return (
@@ -529,7 +556,21 @@ const Home = () => {
                             }}
                             renderItem={({ item, index }) => {
                                 return (
-                                    <NearbyStopsComponent data={{ item, index }} />
+                                    <Pressable
+                                        // animationType={null}
+                                        onPress={() => {
+                                            selectedId === item.stopId ? setSelectedId(null) : setSelectedId(item.stopId)
+                                            _mapRef.current.animateToRegion({
+                                                ...item.stopCoordinates,
+                                                latitudeDelta: 0.004864195844303443,
+                                                longitudeDelta: 0.0040142817690068,
+                                            }, 350)
+                                        }
+                                        }
+
+                                    >
+                                        <NearbyStopsComponent data={{ item, index }} highlighted={selectedId} />
+                                    </Pressable>
                                 )
                             }}
                         />
@@ -846,6 +887,6 @@ const styles = StyleSheet.create({
     },
     MODAL: {
         flex: 0.3,
-        zIndex: 2
+        zIndex: 1000
     },
 })
