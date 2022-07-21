@@ -222,7 +222,6 @@ const Home = () => {
                                 routeStops.map(stop => {
                                     return (
                                         <Marker
-
                                             coordinate={stop.stopCoordinates}
                                         />
                                     )
@@ -470,18 +469,19 @@ const Home = () => {
                     ref={c => { _panel = c; }}
                     allowDragging={dragging}
                     draggableRange={{
-                        top: SIZES.height - 130,
+                        top: SIZES.height / 2,
                         bottom: SIZES.height / 3,
                     }}
                     animatedValue={_draggedValue}
-                    snappingPoints={[SIZES.height]}
-                    height={SIZES.height}
+                    snappingPoints={[SIZES.height / 2]}
+                    showBackdrop={false}
+                    height={SIZES.height / 2 }
                     friction={0.7}
                     onBottomReached={() => { setDragging(true) }}
                 >
                     <View style={{
-                        flex: 1, backgroundColor: COLORS.stopModalGray, borderTopLeftRadius: SIZES.radius * 2,
-                        borderTopRightRadius: SIZES.radius * 2
+                        height: '100%', backgroundColor: COLORS.stopModalGray, borderTopLeftRadius: SIZES.radius * 2,
+                        borderTopRightRadius: SIZES.radius * 2, paddingBottom: 20
                     }}>
                         {/* List Header: Current Address */}
                         <View style={{
@@ -518,12 +518,8 @@ const Home = () => {
                         </View>
                         {/* List of Nearyby Stops */}
                         <FlatList
-                            style={{
-                                marginBottom: 175,
-                                // borderColor:COLORS.black,
-                                // borderWidth:1,
-                                // margin:10
-                            }}
+                            style={{ flex: 1 }}
+                            contentContainerStyle={{ marginBottom: 10 }}
                             data={stopsInfo}
                             keyExtractor={item => item.id}
                             extraData={selectedId}
@@ -857,7 +853,6 @@ const Home = () => {
 export default Home
 
 const styles = StyleSheet.create({
-
     SEARCHBAR:
     {
         height: 50,
@@ -887,6 +882,5 @@ const styles = StyleSheet.create({
     },
     MODAL: {
         flex: 0.3,
-        zIndex: 1000
     },
 })
