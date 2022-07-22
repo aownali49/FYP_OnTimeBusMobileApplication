@@ -7,12 +7,13 @@ const TransactionCard = () => {
     return (
         <Card
             style={{
+                borderRadius:10,
                 marginTop: 5,
                 marginBottom: 5,
                 elevation: 10,
                 height: 180,
                 alignSelf: 'center',
-
+                backgroundColor:COLORS.TransactionCardBeige,
             }}
         >
             <View
@@ -23,9 +24,8 @@ const TransactionCard = () => {
             >
                 <View
                     style={{
-                        flex: 0.3,
-                        borderColor: COLORS.black,
-                        borderWidth: 1,
+                        flex: 0.2,
+
                     }}
                 >
                     <Image
@@ -33,34 +33,133 @@ const TransactionCard = () => {
                         style={{
                             height: 40,
                             width: 40,
-                            left:10,
+                            top: 10,
+                            left: 10,
                         }}
                     />
-                    <View
+                    <Image
+                        source={icons.balance}
                         style={{
-                            flex: 1,
-                            justifyContent: "flex-end",
-                            borderColor: COLORS.black,
-                            borderWidth: 1,
+                            left: 10,
+                            height: 40,
+                            width: 40,
+                            bottom: -90
                         }}
-                    >
-                        <Image
-                            source={icons.balance}
-                            style={{
-                                left:10,
-                                height: 40,
-                                width: 40
-                            }}
-                        />
-                    </View>
+                    />
                 </View>
                 <View
                     style={{
-                        flex: 0.7,
                         // borderColor: COLORS.black,
                         // borderWidth: 1,
+                        flex: 0.8,
+                        flexDirection: 'row'
                     }}
                 >
+                    <View
+                        style={{
+                            // borderColor: COLORS.black,
+                            // borderWidth: 1,
+                            flex: 0.5,
+                            height: '100%',
+                            justifyContent: 'space-between',
+                            flexDirection: 'column',
+                            padding: 20
+                        }}
+                    >
+                        <View
+                            style={{
+                                    flexDirection:'row',
+                                    
+                                }}
+                        >
+                            <Text
+                                style={{
+                                    // borderColor: COLORS.black,
+                                    // borderWidth: 1,
+                                    marginRight:10,
+                                    fontSize: 15,
+                                    color: COLORS.black,
+                                    fontFamily: "Ubuntu-Medium",
+                                    
+                                }}
+                            >Stop 1</Text>
+                            <Text
+                                style={{
+                                    // borderColor: COLORS.black,
+                                    // borderWidth: 1,
+                                    fontSize: 10,
+                                    color: COLORS.black,
+                                    fontFamily: "Ubuntu-Regular",
+                                    textAlignVertical:'center'
+                                }}
+                            >10:00 10 July 2022</Text>
+                        </View>
+
+                        <Image
+                            source={icons.journey}
+                            style={{
+                                left: 10,
+                                height: 30,
+                                width: 30,
+                                // tintColor: COLORS.black,
+                            }}
+                        />
+                        <View
+                            style={{
+                                    flexDirection:'row'
+                                }}
+                        >
+                            <Text
+                                style={{
+                                    // borderColor: COLORS.black,
+                                    // borderWidth: 1,
+                                    marginRight:10,
+                                    fontSize: 15,
+                                    color: COLORS.black,
+                                    fontFamily: "Ubuntu-Medium",
+                                }}
+                            >Stop 2</Text>
+                            <Text
+                                style={{
+                                    // borderColor: COLORS.black,
+                                    // borderWidth: 1,
+                                    fontSize: 10,
+                                    color: COLORS.black,
+                                    fontFamily: "Ubuntu-Regular",
+                                    textAlignVertical:'center'
+                                }}
+                            >11:00 10 July 2022</Text>
+                        </View>
+                    </View>
+                    <View
+                        style={{
+                            flex: 0.5,
+                            justifyContent: 'center',
+                            alignContent: 'center'
+                        }}
+                    >
+                        <View
+                            style={{
+                                backgroundColor: '#FF8B8B',
+                                borderRadius: 20,
+                                width: 80,
+                                height: 80,
+                                alignSelf: 'center',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    fontSize: 18,
+                                    color: COLORS.white,
+                                    fontFamily: "Ubuntu-Bold"
+                                }}
+                            >Rs. 150</Text>
+                        </View>
+
+                    </View>
+
 
                 </View>
 

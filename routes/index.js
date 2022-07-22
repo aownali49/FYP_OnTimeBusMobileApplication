@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from 'react'
 import { NavigationContainer } from "@react-navigation/native";
-import { HomeScreen, SettingScreen, ProfileScreen, Home, Login, Signup,Splash,Balance } from "../screens";
+import { HomeScreen, SettingScreen, ProfileSettingScreen,ProfileScreen, Home, Login, Signup,Splash,Balance } from "../screens";
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { COLORS, FONTS, icons } from "../constants/index"
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -42,7 +42,6 @@ const BottomTabShow = () => {
                                     width: 30,
                                     height: 30,
                                     tintColor: focused ? COLORS.blue : COLORS.white
-
                                 }}
                             />
                         </View>
@@ -92,8 +91,8 @@ const SettingsStackShow =()=>{
     return(
         <SettingsStack.Navigator screenOptions={{headerShown:false}}>
             <SettingsStack.Screen  name="Settings" component={SettingScreen}></SettingsStack.Screen>
+            <SettingsStack.Screen  name="Profile" component={ProfileSettingScreen}></SettingsStack.Screen>
             <SettingsStack.Screen  name="Balance" component={Balance}></SettingsStack.Screen>
-            <SettingsStack.Screen  name="Balance3" component={Balance}></SettingsStack.Screen>
             <SettingsStack.Screen  name="Balance4" component={Balance}></SettingsStack.Screen>
         </SettingsStack.Navigator>
     )

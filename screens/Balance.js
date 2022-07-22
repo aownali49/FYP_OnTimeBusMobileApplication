@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Image, ImageBackground, FlatList, Pressable } f
 import React, { useRef, useEffect, useState } from 'react'
 import { COLORS, images, SIZES, icons } from '../constants'
 import { Card } from 'react-native-shadow-cards';
+import * as Animatable from 'react-native-animatable';
 import { TransactionCard } from '../components';
 
 const Balance = () => {
@@ -33,14 +34,16 @@ const Balance = () => {
             <View
                 style={{
                     flex: 0.4,
-                    backgroundColor: COLORS.LoginGreen
+                    // backgroundColor: COLORS.LoginGreen
+                    backgroundColor: '#E4F9F5'
+
                 }}
             >
                 <Text
                     style={{
                         // borderColor: COLORS.black,
                         // borderWidth: 1,
-                        color: COLORS.black,
+                        color: COLORS.gray,
                         top: 30,
                         paddingLeft: 20,
                         fontSize: 25,
@@ -120,21 +123,18 @@ const Balance = () => {
                     >
                         Muhammad Usman Karamat
                     </Text>
-
-
-
-
                 </Card>
-
-
             </View>
-            <View
+            <Animatable.View
                 style={{
                     flex: 0.6,
-                    backgroundColor: COLORS.stopModalGray,
+                    // backgroundColor: COLORS.mailaWhite,
+                    backgroundColor:COLORS.BluishBalance,
+                    // color:'#FF8B8B',
                     borderRadius: 20,
                     top: -15
                 }}
+                animation="fadeInUpBig"
             >
                 <View
                     style={{
@@ -151,7 +151,7 @@ const Balance = () => {
                             // top: 15,
                             // width:,
                             fontSize: 25,
-                            color: COLORS.black,
+                            color: COLORS.gray,
                             marginLeft: 10,
                             fontFamily: "Ubuntu-Regular"
                         }}
@@ -167,7 +167,7 @@ const Balance = () => {
                         <FlatList
                             style={{
                                 marginTop:10,
-                                marginBottom:50
+                                marginBottom:60
                             }}
                             data={transactionInfo}
                             keyExtractor={item => item.id}
@@ -182,7 +182,7 @@ const Balance = () => {
 
                 </View>
 
-            </View>
+            </Animatable.View>
         </View>
     )
 }

@@ -18,8 +18,11 @@ const notification = require("../assets/icons/notifications.png");
 const help = require("../assets/icons/help.png");
 const balance = require("../assets/icons/balance-large.png");
 const about = require("../assets/icons/about.png");
-
-
+const journey = require("../assets/icons/route.png");
+const email = require("../assets/icons/email.png");
+const phone = require("../assets/icons/phone.png");
+const calendar = require("../assets/icons/calendar.png");
+const home = require("../assets/icons/home.png");
 
 export default {
 bus,
@@ -41,5 +44,10 @@ accSettings,
 notification,
 help,
 balance,
-about
+about,
+journey,
+email,
+phone,
+calendar,
+home
 }

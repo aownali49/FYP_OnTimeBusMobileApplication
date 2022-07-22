@@ -14,7 +14,11 @@ export const COLORS = {
     slateGray:"#2C2E35",
     AlmostWhite:'#FFFEFE',
     LoginGreen:"#9CE3A8",
-    RegisterGray:"#909090"
+    RegisterGray:"#909090",
+    RupeesPink:"#FF8B8B",
+    TransactionCardBeige:'#FFFFFF',
+    BluishBalance:'#F0EBE3'
+
 };
 export const SIZES = {
     // global sizes

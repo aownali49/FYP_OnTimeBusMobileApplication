@@ -7,7 +7,7 @@ const Settings = ({ navigation }) => {
   const [settingsList, setSettingsList] = useState([
     {
       settingName: "Profile Settings",
-      targetAddress: "",
+      targetAddress: "Profile",
       icon: icons.accSettings
     },
     {
@@ -81,15 +81,15 @@ export default Settings
 const styles = StyleSheet.create({
   containerStyle: {
     flex: 1,
-    backgroundColor: COLORS.stopModalGray,
+    backgroundColor: COLORS.BluishBalance,
   },
   listStyle: {
     top: 30,
     alignSelf: 'center',
     marginBottom: 70,
+    width: SIZES.width,
     // borderColor: COLORS.black,
     // borderWidth: 1,
-    width: SIZES.width,
   },
   headingTextStyle:
   {
