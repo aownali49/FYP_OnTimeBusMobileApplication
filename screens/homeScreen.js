@@ -44,12 +44,9 @@ const HomeScreen = ({ navigation }) => {
           >
             <Text style= {{color: COLORS.white, ...FONTS.h3}}>Asia</Text>
           </View>
-
           <TouchableOpacity 
             onPress={()=>{console.log("Profile")}} 
           >
-            
-
           </TouchableOpacity>
       </View>
     )

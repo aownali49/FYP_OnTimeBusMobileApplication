@@ -3,7 +3,16 @@ import React, { useRef, useEffect, useState } from 'react'
 import { COLORS, images, SIZES, icons } from '../constants'
 import { Card } from 'react-native-shadow-cards';
 
+
+
 const Settings = ({ navigation }) => {
+
+  const [userInfo, setUserInfo] = useState({
+    image: icons.accSettings,
+    fullName: 'Usman Karamat',
+    email:'muhammed.usman77@gmail.com'
+  })
+
   const [settingsList, setSettingsList] = useState([
     {
       settingName: "Profile Settings",
@@ -42,19 +51,71 @@ const Settings = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => {
           return (
-            <View>
-              <Text
-                style={styles.headingTextStyle}
+            <Card
+              style={{
+                flexDirection: 'row',
+                marginBottom: 20,
+                borderRadius: 20,
+                height: 120,
+                alignSelf: 'center',
+              }}
+            >
+              <View
+                style={{
+                  flex: 0.3,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
               >
-                App Settings:
-              </Text>
-            </View>
+                <View
+                  style={{
+                    height: 70,
+                    width: 70,
+                    backgroundColor: COLORS.mailaWhite,
+                    borderRadius: 70,
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Image
+                    style={{
+                      height: 35,
+                      width: 35,
+                      tintColor: COLORS.RupeesPink
+                    }}
+                    source={icons.accSettings}
+                  />
+                </View>
+              </View>
+              <View
+                style={{
+                  flex: 0.7,
+                  justifyContent:'center'
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 25,
+                    fontFamily: 'Ubuntu-Bold',
+                    color: COLORS.gray
+                  }}
+                >{userInfo.fullName}</Text>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontFamily: 'Ubuntu-Regular',
+                    color: COLORS.gray
+                  }}
+                >{userInfo.email}</Text>
+              </View>
+
+            </Card>
 
           )
         }}
         renderItem={({ item }) => {
           return (
-            <Pressable onPress={()=>{navigation.navigate(item.targetAddress)}}>
+            <Pressable onPress={() => { navigation.navigate(item.targetAddress) }}>
               <Card
                 style={styles.cardStyle}
               >
@@ -62,6 +123,7 @@ const Settings = ({ navigation }) => {
                   source={item.icon}
                   resizeMode="cover"
                   style={styles.iconStyle}
+
                 />
                 <Text
                   style={styles.settingsTextStyle}
@@ -93,7 +155,7 @@ const styles = StyleSheet.create({
   },
   headingTextStyle:
   {
-    color: COLORS.black,
+    color: COLORS.gray,
     paddingLeft: 15,
     fontSize: 25,
     fontWeight: '600',
@@ -114,12 +176,13 @@ const styles = StyleSheet.create({
     height: 40,
     alignSelf: 'center',
     marginLeft: 10,
+    tintColor: COLORS.RupeesPink
 
   },
   settingsTextStyle: {
     // borderColor:COLORS.black,
     // borderWidth:1,
-    color: COLORS.black,
+    color: COLORS.gray,
     paddingLeft: 15,
     fontSize: 25,
     fontWeight: '600',

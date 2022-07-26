@@ -65,8 +65,7 @@ const ProfileSettingScreen = () => {
                             fontSize: 25,
                             fontFamily: "Ubuntu-Regular"
                         }}
-
-                    >Personal Details:</Text>
+                    >Profile Settings:</Text>
                 </View>
                 <View
                     style={{

@@ -5,7 +5,7 @@ import { Card } from 'react-native-shadow-cards';
 
 const NearbyStopsComponent = (props) => {
     const [stopsInfo, setStopInfo] = useState(props.data.item)
-    console.log("This item is highlighted=>",props.highlighted);
+    // console.log("This item is highlighted=>",props.highlighted);
     // let highlighted = false;
     // props.highlighted===stopsInfo.stopId? highlighted=true :highlighted = false;
 

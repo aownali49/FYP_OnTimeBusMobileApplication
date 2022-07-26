@@ -10,6 +10,7 @@ const man = require("../assets/icons/man.png");
 const bus2 = require("../assets/icons/bus2.png");
 const bus3 = require("../assets/icons/bus3.png");
 const rightarrow = require("../assets/icons/rightarrow.png");
+const downArrow = require("../assets/icons/downArrow.png");
 const online = require("../assets/icons/online.png");
 const pinpoint  = require("../assets/icons/placeholder.png")
 const busStop = require("../assets/icons/bus-stop2.png");
@@ -23,6 +24,9 @@ const email = require("../assets/icons/email.png");
 const phone = require("../assets/icons/phone.png");
 const calendar = require("../assets/icons/calendar.png");
 const home = require("../assets/icons/home.png");
+const notFound= require("../assets/icons/notFound.png");
+const destination= require("../assets/icons/destination.png");
+
 
 export default {
 bus,
@@ -36,6 +40,7 @@ locationcenter,
 back,
 go,
 man,
+downArrow,
 rightarrow,
 bus3,
 online,
@@ -49,5 +54,7 @@ journey,
 email,
 phone,
 calendar,
-home
+home,
+notFound,
+destination
 }

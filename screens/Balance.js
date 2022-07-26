@@ -27,22 +27,18 @@ const Balance = () => {
         <View
             style={{
                 flex: 1,
-                backgroundColor: COLORS.lightGray
+                backgroundColor: '#E4F9F5'
             }}
         >
-            {/* CardView */}
             <View
                 style={{
                     flex: 0.4,
-                    // backgroundColor: COLORS.LoginGreen
                     backgroundColor: '#E4F9F5'
 
                 }}
             >
                 <Text
                     style={{
-                        // borderColor: COLORS.black,
-                        // borderWidth: 1,
                         color: COLORS.gray,
                         top: 30,
                         paddingLeft: 20,
@@ -128,9 +124,7 @@ const Balance = () => {
             <Animatable.View
                 style={{
                     flex: 0.6,
-                    // backgroundColor: COLORS.mailaWhite,
                     backgroundColor:COLORS.BluishBalance,
-                    // color:'#FF8B8B',
                     borderRadius: 20,
                     top: -15
                 }}
@@ -139,17 +133,11 @@ const Balance = () => {
                 <View
                     style={{
                         flex: 1,
-                        // borderColor: COLORS.black,
-                        // borderWidth: 1,
                         top: 15,
                     }}
                 >
                     <Text
                         style={{
-                            // borderColor: COLORS.black,
-                            // borderWidth: 1,
-                            // top: 15,
-                            // width:,
                             fontSize: 25,
                             color: COLORS.gray,
                             marginLeft: 10,
@@ -160,7 +148,6 @@ const Balance = () => {
                     <View
                         style={{
                             flex: 1,
-                            // backgroundColor:COLORS.blue
                         }}
                     >
 

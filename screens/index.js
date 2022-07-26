@@ -7,5 +7,9 @@ export {default as Signup} from './Signup'
 export {default as Splash} from './Splash';
 export {default as Balance} from './Balance';
 export {default as ProfileSettingScreen} from './ProfileScreen';
+export {default as ScanCardRegisterScreen} from './ScanCardRegisterScreen';
+export {default as JourneyScreen} from './JourneyScreen';
+
+
 
 

@@ -74,7 +74,7 @@ const Signup = ({navigation}) => {
                     ></TextInput>
 
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('HomeStack')}
+                        onPress={() => navigation.navigate('ScanCard')}
                         style={styles.LoginButtonStyle}
                     >
                         <Text
