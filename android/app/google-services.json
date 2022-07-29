@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "145342325889",
+    "project_id": "quickbus-59753",
+    "storage_bucket": "quickbus-59753.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145342325889:android:975f929a2460005e289980",
+        "android_client_info": {
+          "package_name": "com.ontimebus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "145342325889-esuh4jhihmbum8rvijrahqke2vflu3t1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXzmI9e-C9i8zuqvwkkpVkxzkGL4hLTrI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "145342325889-esuh4jhihmbum8rvijrahqke2vflu3t1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
