@@ -1,9 +1,102 @@
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Pressable } from 'react-native'
-import React from 'react'
+import React, {useState} from 'react'
 import { dummy, COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Card } from 'react-native-shadow-cards';
+import {auth, db} from '../firebase'
 
-const Signup = ({navigation}) => {
+const Signup = ({ navigation }) => {
+    const [data, setData] = useState({
+        email: '',
+        password: '',
+        confirm_password: '',
+        check_textInputChange: false,
+        secureTextEntry: true,
+        confirm_secureTextEntry: true,
+        isValidPassword: true,
+        isValidConfirmPassword: true,
+    });
+
+    const handleSignUp = () => {
+        auth()
+            .createUserWithEmailAndPassword(data.email, data.password)
+            .then(userCredentials => {
+                const user = userCredentials.user
+                // user.sendEmailVerification()
+                addUser(user)
+                setData({
+                    email: '',
+                    password: '',
+                    confirm_password: '',
+                    check_textInputChange: false,
+                    secureTextEntry: true,
+                    confirm_secureTextEntry: true
+                })
+                // navigation.replace('tabs')
+                navigation.replace('ScanCard')
+            })
+            .catch(error => {
+                // setModalVisible(!modalVisible)
+                // setAlert({
+                //     title: 'Error',
+                //     message: error.message
+                // });
+            });
+    };
+
+    const addUser = (user) => {
+        const userData = {
+            'email': user.email
+        }
+        const userID = user.uid
+        db().collection('users').doc(userID).set(userData)
+    }
+
+    const textChangeHandler = (value) => {
+        if (value.length >= 11) {
+            setData({
+                ...data,
+                email: value,
+                check_textInputChange: true
+            });
+        } else {
+            setData({
+                ...data,
+                email: value,
+                check_textInputChange: false
+            });
+        }
+    };
+
+    const passwordChangeHandler = (val) => {
+        if (val.trim().length >= 6) {
+            setData({
+                ...data,
+                password: val,
+                isValidPassword: true
+            });
+        } else {
+            setData({
+                ...data,
+                password: val,
+                isValidPassword: false
+            });
+        }
+    }
+    const confirmPasswordChangeHandler = (value) => {
+        if (value == data.password) {
+            setData({
+                ...data,
+                confirm_password: value,
+                isValidConfirmPassword: true
+            });
+        } else {
+            setData({
+                ...data,
+                confirm_password: value,
+                isValidConfirmPassword: false
+            });
+        }
+    };
     return (
         <View
             style={{
@@ -58,23 +151,28 @@ const Signup = ({navigation}) => {
                     <TextInput
                         placeholder='Email'
                         placeholderTextColor={'#B5B5B5'}
-
+                        onChangeText={(value) => textChangeHandler(value)}
+                        value={data.email}
                         style={styles.EmailInputStyle}
                     ></TextInput>
                     <TextInput
                         placeholder='Password'
                         placeholderTextColor={'#B5B5B5'}
+                        onChangeText={(value) => passwordChangeHandler(value)}
+                        value={data.password}
                         style={styles.PasswordInputStyle}
                     ></TextInput>
 
                     <TextInput
                         placeholder='Re-Enter Password'
                         placeholderTextColor={'#B5B5B5'}
+                        onChangeText={(value) => confirmPasswordChangeHandler(value)}
+                        value={data.confirm_password}
                         style={styles.PasswordReEnterInputStyle}
                     ></TextInput>
 
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('ScanCard')}
+                        onPress={() => handleSignUp()}
                         style={styles.LoginButtonStyle}
                     >
                         <Text
@@ -83,7 +181,7 @@ const Signup = ({navigation}) => {
                     </TouchableOpacity>
 
                     <Pressable
-                        onPress={() => {navigation.navigate('Login')}}
+                        onPress={() => { navigation.navigate('Login') }}
                         style={({ pressed }) => [
                             {
                                 backgroundColor: pressed ? COLORS.AlmostWhite : COLORS.stopModalGray,
@@ -98,7 +196,7 @@ const Signup = ({navigation}) => {
                                 textAlign: 'center',
                                 fontSize: 12,
                                 fontFamily: "Ubuntu-Regular",
-                                color:COLORS.black
+                                color: COLORS.black
                             }}
 
                         > Already have an account? Press here to login. </Text>
