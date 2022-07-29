@@ -1,19 +1,22 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Pressable } from 'react-native'
 import React from 'react'
 import { COLORS, icons, SIZES } from '../constants'
 import { Card } from 'react-native-shadow-cards';
 
-const TransactionCard = () => {
+const TransactionCard = ({ data }) => {
+    console.log("TransactionDetails",data);
     return (
+
         <Card
+
             style={{
-                borderRadius:10,
+                borderRadius: 10,
                 marginTop: 5,
                 marginBottom: 5,
                 elevation: 10,
                 height: 180,
                 alignSelf: 'center',
-                backgroundColor:COLORS.TransactionCardBeige,
+                backgroundColor: COLORS.TransactionCardBeige,
             }}
         >
             <View
@@ -68,21 +71,21 @@ const TransactionCard = () => {
                     >
                         <View
                             style={{
-                                    flexDirection:'row',
-                                    
-                                }}
+                                flexDirection: 'row',
+
+                            }}
                         >
                             <Text
                                 style={{
                                     // borderColor: COLORS.black,
                                     // borderWidth: 1,
-                                    marginRight:10,
+                                    marginRight: 10,
                                     fontSize: 15,
                                     color: COLORS.black,
                                     fontFamily: "Ubuntu-Medium",
-                                    
+
                                 }}
-                            >Stop 1</Text>
+                            >{data.origStopName}</Text>
                             <Text
                                 style={{
                                     // borderColor: COLORS.black,
@@ -90,7 +93,7 @@ const TransactionCard = () => {
                                     fontSize: 10,
                                     color: COLORS.black,
                                     fontFamily: "Ubuntu-Regular",
-                                    textAlignVertical:'center'
+                                    textAlignVertical: 'center'
                                 }}
                             >10:00 10 July 2022</Text>
                         </View>
@@ -106,19 +109,19 @@ const TransactionCard = () => {
                         />
                         <View
                             style={{
-                                    flexDirection:'row'
-                                }}
+                                flexDirection: 'row'
+                            }}
                         >
                             <Text
                                 style={{
                                     // borderColor: COLORS.black,
                                     // borderWidth: 1,
-                                    marginRight:10,
+                                    marginRight: 10,
                                     fontSize: 15,
                                     color: COLORS.black,
                                     fontFamily: "Ubuntu-Medium",
                                 }}
-                            >Stop 2</Text>
+                            >{data.destStopName}</Text>
                             <Text
                                 style={{
                                     // borderColor: COLORS.black,
@@ -126,7 +129,7 @@ const TransactionCard = () => {
                                     fontSize: 10,
                                     color: COLORS.black,
                                     fontFamily: "Ubuntu-Regular",
-                                    textAlignVertical:'center'
+                                    textAlignVertical: 'center'
                                 }}
                             >11:00 10 July 2022</Text>
                         </View>
@@ -151,20 +154,17 @@ const TransactionCard = () => {
                         >
                             <Text
                                 style={{
-                                    fontSize: 18,
+                                    fontSize: 15,
                                     color: COLORS.white,
                                     fontFamily: "Ubuntu-Bold"
                                 }}
-                            >Rs. 150</Text>
+                            >{data.amount}</Text>
                         </View>
-
                     </View>
-
-
                 </View>
-
             </View>
         </Card>
+
     )
 }
 

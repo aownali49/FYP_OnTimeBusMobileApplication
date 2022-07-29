@@ -1,16 +1,22 @@
-import { Modal, StyleSheet, Text, View, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
+import { Modal, StyleSheet, Text, View, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback, DatePickerIOSBase, Pressable } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import * as Animatable from 'react-native-animatable'
 import { COLORS, SIZES, icons, FONTS } from '../constants'
-import { AreaCodesModal} from '../components'
+import { AreaCodesModal } from '../components'
+import DatePicker from 'react-native-date-picker'
+import Moment from 'moment';
+// import MapView from 'react-native-maps'
 
 const PersonalInformationModal = ({
     modalVisible, setModalVisible,
     option
 }) => {
+    Moment.locale('en');
+    const [date, setDate] = useState(new Date())
     const [areaCodesModal, setAreaCodesModal] = useState(false)
     const [selectedArea, setSelectedArea] = useState('PK')
     const [areas, setAreas] = useState([])
+    const [open, setOpen] = useState(false)
 
     useEffect(() => {
         fetch("https://restcountries.com/v3.1/all")
@@ -177,15 +183,19 @@ const PersonalInformationModal = ({
                             </View>
                             <View
                                 style={{
-                                    marginTop: 10,
-                                    // borderWidth:1,
+                                    marginTop: 30,
                                 }}
                             >
-                                <View style={{ flexDirection: 'row'}}>
-                                <TouchableOpacity
+                                <View style={{
+                                    flexDirection: 'row',
+                                    padding: 10,
+
+                                }}>
+                                    <TouchableOpacity
                                         style={{
                                             width: 100,
                                             height: 50,
+                                            marginTop: 10,
                                             flexDirection: "row",
                                             marginHorizontal: 5,
                                             borderBottomWidth: 1,
@@ -205,7 +215,7 @@ const PersonalInformationModal = ({
                                                 }}
                                             />
                                         </View>
-                                        <View style={{ justifyContent: "center", marginLeft: 5 }}>
+                                        <View style={{ justifyContent: "center", marginLeft: 5, }}>
                                             <Image
                                                 source={{ uri: selectedArea?.flag }}
                                                 resizeMode='contain'
@@ -244,14 +254,177 @@ const PersonalInformationModal = ({
                             </View>
                         </View>
                     }
+                    {
+                        option === '4' &&
+                        <View
+                            style={{
+                                flex: 1,
+                                flexDirection: "column"
+                            }}
+                        >
+                            <View
+                                style={{
+                                    flex: 0.10,
+                                    marginTop: 15
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        color: COLORS.gray,
+                                        fontFamily: 'Ubuntu-Regular',
+                                        fontSize: 20
+                                    }}
+                                >
+                                    Please enter your date of birth:
+                                </Text>
+                            </View>
+                            <View
+                                style={{
+                                    flex: 0.85,
+                                }}
+                            >
+                                <View
+                                    style={{
+                                        flex: 0.15,
+                                        marginTop: 10,
+                                        flexDirection: 'row',
+                                        justifyContent: 'center'
+                                        // alignItems:'center'
+                                    }}
+                                >
+                                    <Pressable
+                                        onPress={() => {
+                                            setOpen(true)
+                                        }}
+                                        style={{
+                                            paddingHorizontal: 25,
+                                            borderRadius: 20,
+                                            backgroundColor: COLORS.lightGray,
+                                            justifyContent: 'center',
+                                            width: 300
+                                        }}
+                                    >
+                                        <Text
+                                            style={{
+                                                color: COLORS.black,
+                                                fontSize: 20,
+                                                fontFamily: "Ubuntu-Regular",
+                                                textAlign: 'center'
+                                            }}
+                                        >{Moment(date).format('DD MMMM YYYY')}</Text>
+                                    </Pressable>
+
+                                </View>
+                                <View 
+                                    style={{
+                                        flex: 0.15,
+                                        marginTop:20,
+                                    }}
+                                >
+                                    <TouchableOpacity
+                                        onPress={() => { }}
+                                        style={styles.LoginButtonStyle}
+                                    >
+                                        <Text
+                                            style={styles.ButtonTextStyle}
+                                        >Save</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => { }}
+                                        style={styles.RegisterButton}
+                                    >
+                                        <Text
+                                            style={styles.ButtonTextStyle}
+                                        >Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <DatePicker
+                                    modal
+                                    mode={'date'}
+                                    maximumDate={new Date()}
+                                    minimumDate={new Date('1900-01-01')}
+                                    open={open}
+                                    date={date}
+                                    onConfirm={(date) => {
+                                        setOpen(false)
+                                        setDate(date)
+                                    }}
+                                    onCancel={() => {
+                                        setOpen(false)
+                                    }}
+                                />
+                            </View>
+
+                        </View>
+                    }
+                    {
+                        option === '5' &&
+                        <View
+                            style={{
+                                flex: 1,
+                            }}
+                        >
+                            <View
+                                style={{
+                                    flex: 0.10,
+                                    marginTop: 15
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        color: COLORS.gray,
+                                        fontFamily: 'Ubuntu-Regular',
+                                        fontSize: 20
+                                    }}
+                                >
+                                    Please enter your current address:
+                                </Text>
+                            </View>
+                            <View
+                                style={{
+                                    flex: 0.80,
+                                }}
+                            >
+                                <View>
+                                    <TextInput
+                                        placeholder='Address line 1'
+                                        placeholderTextColor={'#B5B5B5'}
+                                        style={styles.EmailInputStyle}
+                                    />
+                                    <TextInput
+                                        placeholder='Address line 2'
+                                        placeholderTextColor={'#B5B5B5'}
+                                        style={styles.EmailInputStyle}
+                                    />
+                                    <TouchableOpacity
+                                        onPress={() => { }}
+                                        style={styles.LoginButtonStyle}
+                                    >
+                                        <Text
+                                            style={styles.ButtonTextStyle}
+                                        >Save</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => { }}
+                                        style={styles.RegisterButton}
+                                    >
+                                        <Text
+                                            style={styles.ButtonTextStyle}
+                                        >Cancel</Text>
+                                    </TouchableOpacity>
+
+                                </View>
+                            </View>
+                        </View>
+                    }
 
                 </Animatable.View >
             </View>
-            <AreaCodesModal 
-            modalVisible={areaCodesModal}
-            setModalVisible={setAreaCodesModal}
-            setSelectedArea = {setSelectedArea}
-            areas={areas}
+            <AreaCodesModal
+                modalVisible={areaCodesModal}
+                setModalVisible={setAreaCodesModal}
+                setSelectedArea={setSelectedArea}
+                areas={areas}
             />
         </Modal>
     )

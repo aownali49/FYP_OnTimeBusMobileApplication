@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from 'react'
 import { NavigationContainer } from "@react-navigation/native";
-import { HomeScreen, SettingScreen, ProfileSettingScreen,ProfileScreen, Home, Login, Signup,Splash,Balance,ScanCardRegisterScreen, JourneyScreen } from "../screens";
+import { HomeScreen, SettingScreen, ProfileSettingScreen,ProfileScreen, Home, Login, Signup,Splash,Balance,ScanCardRegisterScreen, JourneyScreen,TicketScreen } from "../screens";
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { COLORS, FONTS, icons } from "../constants/index"
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -94,6 +94,8 @@ const SettingsStackShow =()=>{
             <SettingsStack.Screen  name="Profile" component={ProfileSettingScreen}></SettingsStack.Screen>
             <SettingsStack.Screen  name="Balance" component={Balance}></SettingsStack.Screen>
             <SettingsStack.Screen  name="Balance4" component={Balance}></SettingsStack.Screen>
+            <SettingsStack.Screen  name="Journey" component={JourneyScreen}></SettingsStack.Screen>
+            <SettingsStack.Screen  name="TicketScreen" component={TicketScreen}></SettingsStack.Screen>
         </SettingsStack.Navigator>
     )
 }

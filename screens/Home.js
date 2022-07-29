@@ -92,8 +92,8 @@ const Home = () => {
             distance: "",
             tta: "10 mins",
             stopCoordinates: {
-                latitude: 33.659123,
-                longitude: 73.034217,
+                latitude: 33.662285,
+                longitude: 73.019017,
             }
         },
         {
@@ -103,8 +103,8 @@ const Home = () => {
             distance: "",
             tta: "10 mins",
             stopCoordinates: {
-                latitude: 33.659123,
-                longitude: 73.034217,
+                latitude: 33.663740,
+                longitude: 73.024782,
             }
         },
         {
@@ -119,7 +119,6 @@ const Home = () => {
             }
         }
     ])
-
     // Route/Journey
     const [searchResult, setSearchResult] = useState([]);
 
@@ -300,8 +299,8 @@ const Home = () => {
                     ref={c => { _panel = c; }}
                     allowDragging={dragging}
                     draggableRange={{
-                        top: SIZES.height / 2,
-                        bottom: SIZES.height / 3,
+                        top: SIZES.height / 1.8,
+                        bottom: SIZES.height / 2.98,
                     }}
                     animatedValue={_draggedValue}
                     snappingPoints={[SIZES.height / 2]}
@@ -312,101 +311,192 @@ const Home = () => {
                 >
                     <View style={{
                         height: '100%', backgroundColor: COLORS.stopModalGray, borderTopLeftRadius: SIZES.radius * 2,
-                        borderTopRightRadius: SIZES.radius * 2, paddingBottom: 20
+                        borderTopRightRadius: SIZES.radius * 2, paddingBottom: 20,
                     }}>
-                        {/* List Header: Current Address */}
                         <View style={{
-                            // borderColor:COLORS.black,
-                            // borderWidth:1,
-                            // // top:15,
-                            height: 60,
-                            flexDirection: 'row',
+                            flex: 0.25,
+                            padding: 0,
+                            flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <Image
-                                source={icons.pinpoint}
+                            <View
                                 style={{
-                                    position: 'absolute',
-                                    left: 10,
-                                    width: 25,
-                                    height: 25,
-                                    // borderColor:COLORS.black,
+                                    flex: 0.3,
+                                    maxWidth: SIZES.width - 20,
+                                    minWidth: SIZES.width - 20,
+                                    flexDirection: 'row',
+                                    // borderColor: COLORS.blue,
                                     // borderWidth: 1,
                                 }}
-                            />
-                            <Text style={{
-                                fontSize: 20,
-                                color: COLORS.black,
-                                marginLeft: 10,
-                                fontFamily: "Ubuntu-Regular"
-                                // borderColor:COLORS.black,
-                                // borderWidth: 1,
-                            }}
                             >
-                                657, Rafi Block, Bahria Phase VIII
-                            </Text>
+                                <Image
+                                    source={icons.pinpoint}
+                                    style={{
+                                        width: 25,
+                                        height: 25,
+                                        // borderColor: COLORS.black,
+                                        // borderWidth: 1,
+                                    }}
+                                />
+                                <Text style={{
+                                    fontSize: 20,
+                                    color: COLORS.black,
+                                    marginLeft: 10,
+                                    fontFamily: "Ubuntu-Regular"
+                                }}
+                                >
+                                    657, Rafi Block, Bahria Phase VIII
+                                </Text>
+                            </View>
+                            <View
+                                style={{
+                                    flex: 0.3,
+                                    marginTop: 10,
+                                    width: SIZES.width - 20,
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        color: COLORS.black,
+                                        fontSize: 17,
+                                        fontFamily: "Ubuntu-Regular"
+                                    }}
+                                >
+                                    Near by Stops:
+                                </Text>
+                            </View>
                         </View>
                         {/* List of Nearyby Stops */}
-                        <FlatList
-                            style={{ flex: 1 }}
-                            contentContainerStyle={{ marginBottom: 10 }}
-                            data={stopsInfo}
-                            keyExtractor={item => item.id}
-                            extraData={selectedId}
-                            refreshing={refreshing}
-                            onRefresh={() => {
-                                setRefreshing(true);
-                                setTimeout(() => {
-                                    setRefreshing(false);
-                                }, 2000)
+                        <View
+                            style=
+                            {{
+                                flex: 0.35,
+                                borderWidth: 1,
+                                borderColor: COLORS.RupeesPink,
                             }}
-                            showsVerticalScrollIndicator={false}
-                            ListHeaderComponent={() => {
-                                return (
-                                    <View>
-                                        <Text
+                        >
+                            <FlatList
+                                horizontal={true}
+                                contentContainerStyle={{ marginBottom: 10 }}
+                                data={stopsInfo}
+                                keyExtractor={item => item.id}
+                                extraData={selectedId}
+                                refreshing={refreshing}
+                                onRefresh={() => {
+                                    setRefreshing(true);
+                                    setTimeout(() => {
+                                        setRefreshing(false);
+                                    }, 2000)
+                                }}
+                                showsVerticalScrollIndicator={false}
+                                renderItem={({ item, index }) => {
+                                    return (
+                                        <Pressable
                                             style={{
-                                                // borderColor:COLORS.black,
-                                                // borderWidth:1,
-                                                color: COLORS.black,
-                                                paddingLeft: 15,
-                                                fontSize: 17,
-                                                fontWeight: '600'
+                                                borderWidth: 1,
+                                                height: 110,
+                                                // paddingTop: 5
+                                                justifyContent: 'center'
+                                            }}
+                                            onPress={() => {
+                                                selectedId === item.stopId ? setSelectedId(null) : setSelectedId(item.stopId)
+                                                _mapRef.current.animateToRegion({
+                                                    ...item.stopCoordinates,
+                                                    latitudeDelta: 0.004864195844303443,
+                                                    longitudeDelta: 0.0040142817690068,
+                                                }, 350)
+                                            }
+                                            }
+                                        >
+                                            <NearbyStopsComponent data={{ item, index }} highlighted={selectedId} />
+                                        </Pressable>
+                                    )
+                                }}
+                            />
+
+                        </View>
+                        <View
+                            style={{
+                                flex: 0.4,
+                                marginBottom: -10,
+                                borderWidth: 1,
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}
+                        >
+                            {
+                                selectedId !== null &&
+                                <Card
+                                    style={{
+                                        height: 130,
+                                        width: SIZES.width - 20,
+                                        flexDirection: 'column'
+                                    }}
+                                >
+                                    <View
+                                        style={{
+                                            flex: 0.3,
+                                            borderWidth: 1,
+                                            flexDirection: 'row'
+                                        }}
+                                    >
+                                        {/* headerBox */}
+                                        <View
+                                            style={{
+                                                flex: 0.2,
+                                                borderWidth: 1,
+                                                justifyContent: 'center',
+                                                alignItems: 'center'
                                             }}
                                         >
-                                            Near by Stops:
-                                        </Text>
+                                            {/* imagebox */}
+                                            <Image
+                                                source={icons.busStop}
+                                                style={{
+                                                    height: 25,
+                                                    width: 25,
+                                                }}
+                                            />
+                                        </View>
+
+                                        <View
+                                            style={{
+                                                flex: 0.8,
+                                                borderWidth: 1,
+                                            }}
+                                        >
+                                            <Text
+                                                style={{
+                                                    fontFamily:'Ubuntu-Regular',
+                                                    fontSize:20,
+                                                    color:COLORS.black
+                                                }}
+                                            >
+                                                {stopsInfo[stopsInfo.findIndex(item=>{return item.stopId===selectedId})].stopName}
+                                            </Text>
+
+                                        </View>
+
                                     </View>
-
-                                )
-                            }}
-                            renderItem={({ item, index }) => {
-                                return (
-                                    <Pressable
-                                        // animationType={null}
-                                        onPress={() => {
-                                            selectedId === item.stopId ? setSelectedId(null) : setSelectedId(item.stopId)
-                                            _mapRef.current.animateToRegion({
-                                                ...item.stopCoordinates,
-                                                latitudeDelta: 0.004864195844303443,
-                                                longitudeDelta: 0.0040142817690068,
-                                            }, 350)
-                                        }
-                                        }
-
+                                    <View
+                                        style={{
+                                            flex: 0.7,
+                                            borderWidth: 1,
+                                        }}
                                     >
-                                        <NearbyStopsComponent data={{ item, index }} highlighted={selectedId} />
-                                    </Pressable>
-                                )
-                            }}
-                        />
+                                        {/* stop details box */}
+                                    </View>
+                                </Card>
+                            }
 
+
+                        </View>
                     </View>
 
 
-                </SlidingUpPanel>
-            </View>
+                </SlidingUpPanel >
+            </View >
         )
     }
     function RenderCenterLocation() {
@@ -791,7 +881,7 @@ const Home = () => {
                                         backgroundColor: COLORS.lightGray,
                                         borderRadius: 50,
                                         // margin:10,
-                                        height:65,
+                                        height: 65,
                                         width: 65,
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -1040,7 +1130,7 @@ const Home = () => {
             </Modal >
         )
     }
-    
+
     return (
         <View style={styles.HOME}>
             {renderSearchResultModal()}

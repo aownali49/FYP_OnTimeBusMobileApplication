@@ -9,6 +9,10 @@ export {default as Balance} from './Balance';
 export {default as ProfileSettingScreen} from './ProfileScreen';
 export {default as ScanCardRegisterScreen} from './ScanCardRegisterScreen';
 export {default as JourneyScreen} from './JourneyScreen';
+export {default as HelpScreen} from './HelpScreen';
+export {default as TicketScreen} from './TicketScreen';
+
+
 
 
 

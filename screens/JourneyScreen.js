@@ -9,9 +9,6 @@ import { Card } from 'react-native-shadow-cards'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 var axios = require('axios');
 
-
-
-
 const JourneyScreen = () => {
     const [coordinates, setCoordinates] = useState({
         pickupCoords: {

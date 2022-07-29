@@ -5,24 +5,145 @@ import { Card } from 'react-native-shadow-cards';
 import * as Animatable from 'react-native-animatable';
 import { TransactionCard } from '../components';
 
-const Balance = () => {
-    const [transactionInfo, setTransactionInfo] = useState([
+const Balance = ({navigation}) => {
+    const [stopsInfo, setStopInfo] = useState([
         {
-            id: "1"
+            stopId: 1,
+            stopName: "Hostel E,F,G",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "2 mins",
+            stopCoordinates: {
+                latitude: 33.659123,
+                longitude: 73.034217,
+            }
         },
         {
-            id: "2"
+            stopId: 2,
+            stopName: "Girl's Hostel Stop",
+            stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
+            distance: "",
+            tta: "15 mins",
+            stopCoordinates: {
+                latitude: 33.657259,
+                longitude: 73.031897,
+            }
         },
         {
-            id: "3"
+            stopId: 3,
+            stopName: "Water Tank Stop",
+            stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
+            distance: "",
+            tta: "25 mins",
+            stopCoordinates: {
+                latitude: 33.655689,
+                longitude: 73.023094,
+            }
+
         },
         {
-            id: "4"
+            stopId: 4,
+            stopName: "Zero Point IIUI",
+            stopAddress: "H-10, ICT, Pakistan",
+            distance: "",
+            tta: "25 mins",
+            stopCoordinates: {
+                latitude: 33.657067,
+                longitude: 73.022226,
+            }
         },
         {
-            id: "5"
+            stopId: 5,
+            stopName: "Hostel 5,6 Stop",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "10 mins",
+            stopCoordinates: {
+                latitude: 33.660778,
+                longitude: 73.021422,
+            }
+        },
+        {
+            stopId: 6,
+            stopName: "IIUI Security Camp",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "10 mins",
+            stopCoordinates: {
+                latitude: 33.662285,
+                longitude: 73.019017,
+            }
+        },
+        {
+            stopId: 7,
+            stopName: "FMS Stop",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "10 mins",
+            stopCoordinates: {
+                latitude: 33.663740,
+                longitude: 73.024782,
+            }
+        },
+        {
+            stopId: 8,
+            stopName: "Admin Stop",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "10 mins",
+            stopCoordinates: {
+                latitude: 33.662854,
+                longitude: 73.031017,
+            }
         }
     ])
+    const [transactionInfo, setTransactionInfo] = useState([
+        {
+            transactionId: "1",
+            origStopId: 1,
+            destStopId: 2,
+            origStopName:"",
+            destStopName:'',
+            amount:'Rs.100'
+        },
+        {
+            transactionId: "2",
+            origStopId: 3,
+            origStopName:"",
+            destStopName:'',
+            destStopId: 5,
+            amount:'Rs.100'
+        },
+        {
+            transactionId: "3",
+            origStopId: 2,
+            origStopName:"",
+            destStopName:'',
+            destStopId: 7,
+            amount:'Rs.100'
+        },
+        {
+            transactionId: "1",
+            origStopId: 1,
+            origStopName:"",
+            destStopName:'',
+            destStopId: 8,
+            amount:'Rs.100'
+        },
+        {
+            transactionId: "4",
+            origStopId: 8,
+            origStopName:"",
+            destStopName:'',
+            destStopId: 1,
+            amount:'Rs.100'
+        }
+    ])
+    transactionInfo.forEach(item=>{
+        item.origStopName = stopsInfo[stopsInfo.findIndex(stop=>{return stop.stopId===item.origStopId})].stopName;
+        item.destStopName = stopsInfo[stopsInfo.findIndex(stop=>{return stop.stopId===item.destStopId})].stopName;
+    })
+
     return (
         <View
             style={{
@@ -124,7 +245,7 @@ const Balance = () => {
             <Animatable.View
                 style={{
                     flex: 0.6,
-                    backgroundColor:COLORS.BluishBalance,
+                    backgroundColor: COLORS.BluishBalance,
                     borderRadius: 20,
                     top: -15
                 }}
@@ -153,15 +274,21 @@ const Balance = () => {
 
                         <FlatList
                             style={{
-                                marginTop:10,
-                                marginBottom:60
+                                marginTop: 10,
+                                marginBottom: 60
                             }}
                             data={transactionInfo}
                             keyExtractor={item => item.id}
                             showsVerticalScrollIndicator={false}
-                            renderItem={({ item, index }) => {
+                            renderItem={({ item }) => {
                                 return (
-                                    <TransactionCard data={{ item, index }} />
+                                    <Pressable
+                                        onPress={() => {
+                                            navigation.navigate('TicketScreen',{item})
+                                        }}
+                                    >
+                                        <TransactionCard data={item} />
+                                    </Pressable>
                                 )
                             }}
                         />
