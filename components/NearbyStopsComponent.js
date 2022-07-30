@@ -119,7 +119,7 @@ const NearbyStopsComponent = (props) => {
                     style={{
                         color: COLORS.black,
                         fontSize: 12,
-                        fontFamily: "Ubuntu-Regular",
+                        fontFamily: props.highlighted===stopsInfo.stopId?"Ubuntu-Bold":"Ubuntu-Regular",
                         textAlign:'center'
                     }}
                 >

@@ -314,20 +314,17 @@ const Home = () => {
                         borderTopRightRadius: SIZES.radius * 2, paddingBottom: 20,
                     }}>
                         <View style={{
-                            flex: 0.25,
-                            padding: 0,
+                            flex: 0.1,
+                            padding: 5,
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
                             <View
                                 style={{
-                                    flex: 0.3,
                                     maxWidth: SIZES.width - 20,
                                     minWidth: SIZES.width - 20,
                                     flexDirection: 'row',
-                                    // borderColor: COLORS.blue,
-                                    // borderWidth: 1,
                                 }}
                             >
                                 <Image
@@ -335,35 +332,16 @@ const Home = () => {
                                     style={{
                                         width: 25,
                                         height: 25,
-                                        // borderColor: COLORS.black,
-                                        // borderWidth: 1,
                                     }}
                                 />
                                 <Text style={{
                                     fontSize: 20,
                                     color: COLORS.black,
                                     marginLeft: 10,
-                                    fontFamily: "Ubuntu-Regular"
+                                    fontFamily: "Ubuntu-Regular",
                                 }}
                                 >
-                                    657, Rafi Block, Bahria Phase VIII
-                                </Text>
-                            </View>
-                            <View
-                                style={{
-                                    flex: 0.3,
-                                    marginTop: 10,
-                                    width: SIZES.width - 20,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color: COLORS.black,
-                                        fontSize: 17,
-                                        fontFamily: "Ubuntu-Regular"
-                                    }}
-                                >
-                                    Near by Stops:
+                                    Nearby Stops:
                                 </Text>
                             </View>
                         </View>
@@ -371,9 +349,7 @@ const Home = () => {
                         <View
                             style=
                             {{
-                                flex: 0.35,
-                                borderWidth: 1,
-                                borderColor: COLORS.RupeesPink,
+                                flex: 0.37,
                             }}
                         >
                             <FlatList
@@ -394,9 +370,7 @@ const Home = () => {
                                     return (
                                         <Pressable
                                             style={{
-                                                borderWidth: 1,
                                                 height: 110,
-                                                // paddingTop: 5
                                                 justifyContent: 'center'
                                             }}
                                             onPress={() => {
@@ -418,9 +392,9 @@ const Home = () => {
                         </View>
                         <View
                             style={{
-                                flex: 0.4,
+                                flex: 0.5,
                                 marginBottom: -10,
-                                borderWidth: 1,
+                                // borderWidth: 1,
                                 justifyContent: 'center',
                                 alignItems: 'center'
                             }}
@@ -429,7 +403,7 @@ const Home = () => {
                                 selectedId !== null &&
                                 <Card
                                     style={{
-                                        height: 130,
+                                        height: 165,
                                         width: SIZES.width - 20,
                                         flexDirection: 'column'
                                     }}
@@ -437,7 +411,6 @@ const Home = () => {
                                     <View
                                         style={{
                                             flex: 0.3,
-                                            borderWidth: 1,
                                             flexDirection: 'row'
                                         }}
                                     >
@@ -445,7 +418,6 @@ const Home = () => {
                                         <View
                                             style={{
                                                 flex: 0.2,
-                                                borderWidth: 1,
                                                 justifyContent: 'center',
                                                 alignItems: 'center'
                                             }}
@@ -463,38 +435,94 @@ const Home = () => {
                                         <View
                                             style={{
                                                 flex: 0.8,
-                                                borderWidth: 1,
+                                                justifyContent: 'center'
                                             }}
                                         >
                                             <Text
                                                 style={{
-                                                    fontFamily:'Ubuntu-Regular',
-                                                    fontSize:20,
-                                                    color:COLORS.black
+                                                    marginLeft: 5,
+                                                    fontFamily: 'Ubuntu-Regular',
+                                                    fontSize: 22,
+                                                    color: COLORS.black,
                                                 }}
                                             >
-                                                {stopsInfo[stopsInfo.findIndex(item=>{return item.stopId===selectedId})].stopName}
+                                                {stopsInfo[stopsInfo.findIndex(item => { return item.stopId === selectedId })].stopName}
                                             </Text>
-
                                         </View>
 
                                     </View>
                                     <View
                                         style={{
-                                            flex: 0.7,
-                                            borderWidth: 1,
+                                            flex: 0.8,
+                                            marginLeft: 5,
+                                            textAlignVertical: 'center',
+                                            flexDirection: 'column'
                                         }}
                                     >
-                                        {/* stop details box */}
+                                        <Text
+                                            style={{
+                                                flex: 0.33,
+                                                marginLeft: 5,
+                                                textAlignVertical: 'center',
+                                                fontSize: 15,
+                                                fontFamily: 'Ubuntu-Regular',
+                                                color: COLORS.black,
+                                            }}
+                                        >
+                                            Address: 
+                                            <Text
+                                                style={{
+                                                    fontSize: 20,
+                                                    fontSize: 15,
+                                                    fontFamily: 'Ubuntu-Bold',
+                                                }}
+                                            >
+                                                {stopsInfo[stopsInfo.findIndex(item => { return item.stopId === selectedId })].stopAddress}
+                                            </Text>
+                                        </Text>
+                                        <Text
+                                            style={{
+                                                flex: 0.33,
+                                                marginLeft: 5,
+                                                textAlignVertical: 'center',
+                                                fontSize: 20,
+                                                fontSize: 15,
+                                                color: COLORS.black,
+                                                fontFamily: 'Ubuntu-Regular',
+
+                                            }}
+                                        >
+                                            Next Bus in: 5 mins
+                                        </Text>
+                                        <Text
+                                            style={{
+                                                flex: 0.33,
+                                                marginLeft: 5,
+                                                textAlignVertical: 'center',
+                                                color: COLORS.black,
+                                                fontSize: 20,
+                                                fontSize: 15,
+                                                fontFamily: 'Ubuntu-Regular',
+
+                                            }}
+                                        >
+                                            Next Bus to:
+                                            <Text
+                                                style={{
+                                                    fontSize: 20,
+                                                    fontSize: 15,
+                                                    fontFamily: 'Ubuntu-Bold',
+                                                }}
+                                            >
+                                                {stopsInfo[stopsInfo.findIndex(item => { return item.stopId === selectedId }) + 1]?.stopName}
+                                            </Text>
+                                        </Text>
                                     </View>
+                                    {/* stop details box */}
                                 </Card>
                             }
-
-
                         </View>
                     </View>
-
-
                 </SlidingUpPanel >
             </View >
         )
@@ -1174,6 +1202,6 @@ const styles = StyleSheet.create({
     },
     MODAL: {
         flex: 0.3,
-        zIndex: 2
+        zIndex: 999
     },
 })

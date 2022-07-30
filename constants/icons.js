@@ -26,6 +26,9 @@ const calendar = require("../assets/icons/calendar.png");
 const home = require("../assets/icons/home.png");
 const notFound= require("../assets/icons/notFound.png");
 const destination= require("../assets/icons/destination.png");
+const from= require("../assets/icons/from.png");
+const dollar= require("../assets/icons/sack-dollar.png");
+const clock= require("../assets/icons/clock.png");
 
 
 export default {
@@ -56,5 +59,8 @@ phone,
 calendar,
 home,
 notFound,
-destination
+destination,
+from,
+dollar,
+clock
 }
