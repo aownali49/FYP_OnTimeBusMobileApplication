@@ -29,7 +29,7 @@ const destination= require("../assets/icons/destination.png");
 const from= require("../assets/icons/from.png");
 const dollar= require("../assets/icons/sack-dollar.png");
 const clock= require("../assets/icons/clock.png");
-
+const nfcIcon= require("../assets/icons/nfcIcon.png");
 
 export default {
 bus,
@@ -62,5 +62,6 @@ notFound,
 destination,
 from,
 dollar,
-clock
+clock,
+nfcIcon
 }

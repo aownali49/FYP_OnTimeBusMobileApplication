@@ -1,10 +1,33 @@
 
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import * as Animatable from 'react-native-animatable'
+import React, { useState } from 'react'
 import { dummy, COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Card } from 'react-native-shadow-cards';
-
+import NfcManager, { NfcTech } from 'react-native-nfc-manager';
+NfcManager.start();
 const ScanCardRegisterScreen = ({ navigation }) => {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [cardNumber, setCardNumber] = useState(null);
+
+    async function readNdef() {
+        try {
+            // register for the NFC tag with NDEF in it
+            await NfcManager.requestTechnology(NfcTech.Ndef);
+            // the resolved tag object will contain `ndefMessage` property
+            const tag = await NfcManager.getTag();
+            console.log("Tag ID:",tag.id);
+            setCardNumber(tag.id);
+            
+
+        } catch (ex) {
+            console.warn('Oops!', ex);
+        } finally {
+            // stop the nfc scanning
+            NfcManager.cancelTechnologyRequest();
+        }
+    }
+    
     return (
         <View
             style={{
@@ -94,19 +117,178 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                             placeholder='Scan Card Number'
                             placeholderTextColor={'#B5B5B5'}
                             style={styles.CardNumberInputStyle}
-                        ></TextInput>
+                            value={cardNumber}
+                            onChangeText={(text) => {
+                                setCardNumber(text)
+                            }}
+                        />
                     </Card>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('HomeStack')}
+                        onPress={() => { }}
                         style={styles.LoginButtonStyle}
                     >
                         <Text
                             style={styles.ButtonTextStyle}
                         >Next</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => {
+                            setModalOpen(true);
+                            readNdef();
+                        }}
+                        style={{
+                            position: 'absolute',
+                            top: 250,
+                            height: 39,
+                            paddingHorizontal: 10,
+                            borderRadius: 20,
+                            backgroundColor: COLORS.lightGray,
+                            alignSelf: 'center',
+                            textAlign: 'center',
+                        }}
+                    >
+                        <Text
+                            style={styles.ButtonTextStyle}
+                        >Scan Card with NFC</Text>
+                    </TouchableOpacity>
                 </Card>
+
+                {
+                    modalOpen &&
+                    <Animatable.View
+                        animation='fadeInUpBig'
+                    // animation='slideInDown'
+
+
+                    >
+                        <Card
+                            animationType='fade'
+                            style={{
+                                height: 300, width: 300,
+                                backgroundColor: COLORS.white,
+                                borderRadius: 20,
+                                alignSelf: 'center',
+                                top: 200,
+                                elevation: 50,
+                                flexDirection: 'column'
+                            }}>
+                            {
+                                cardNumber === null &&
+                                <Text
+                                    style={{
+                                        fontFamily: "Ubuntu-Regular",
+                                        fontSize: 25,
+                                        color: COLORS.gray,
+                                        textAlign: 'center',
+                                        marginTop: 20
+                                    }}
+                                >
+                                    Ready to Scan
+                                </Text>
+                            }
+                            {
+                                cardNumber &&
+                                <Text
+                                    style={{
+                                        fontFamily: "Ubuntu-Regular",
+                                        fontSize: 25,
+                                        color: COLORS.gray,
+                                        textAlign: 'center',
+                                        marginTop: 20
+                                    }}
+                                >
+                                    Scan Complete
+                                </Text>
+                            }
+                            <Image
+                                style={{
+                                    alignSelf: 'center',
+                                    marginTop: 30,
+                                    height: 100,
+                                    width: 100,
+                                    tintColor: cardNumber ? COLORS.LoginGreen : COLORS.gray
+                                }}
+                                source={icons.nfcIcon}
+                            />
+                            {
+                                cardNumber &&
+                                <Text
+                                style={{
+                                    fontFamily: "Ubuntu-Regular",
+                                    fontSize: 15,
+                                    color: '#DCDCDC',
+                                    textAlign: 'center',
+                                    paddingHorizontal: 10,
+                                    marginTop: 20
+                                }}
+                            >
+                                Scan completed, continue to save card details.
+                            </Text>
+                            }
+                            {
+                                !cardNumber &&
+                                <Text
+                                style={{
+                                    fontFamily: "Ubuntu-Regular",
+                                    fontSize: 15,
+                                    color: '#DCDCDC',
+                                    textAlign: 'center',
+                                    paddingHorizontal: 10,
+                                    marginTop: 20
+                                }}
+                            >
+                                Hold your phone near the QuickBus Card to Scan.
+                            </Text>
+                            }
+
+                            {
+                                cardNumber &&
+                                <TouchableOpacity
+                                    onPress={() => { setModalOpen(false) }}
+                                    style={{
+                                        height: 39,
+                                        width: 110,
+                                        borderRadius: 20,
+                                        top: 10,
+                                        backgroundColor: COLORS.LoginGreen,
+                                        alignSelf: 'center',
+                                        textAlign: 'center',
+                                    }}
+                                >
+                                    <Text
+                                        style={styles.ButtonTextStyle}
+                                    >Continue</Text>
+                                </TouchableOpacity>
+                            }
+
+                            {
+                                !cardNumber &&
+                                <TouchableOpacity
+                                    onPress={() => { setModalOpen(false) }}
+                                    style={{
+                                        height: 39,
+                                        width: 110,
+                                        borderRadius: 20,
+                                        top: 10,
+                                        backgroundColor: COLORS.lightGray,
+                                        alignSelf: 'center',
+                                        textAlign: 'center',
+                                    }}
+                                >
+                                    <Text
+                                        style={styles.ButtonTextStyle}
+                                    >Cancel</Text>
+                                </TouchableOpacity>
+                            }
+                        </Card>
+                    </Animatable.View>
+                }
+
             </View>
         </View >
+
+
     )
 }
 
@@ -123,13 +305,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 25,
         color: COLORS.black,
         width: '85%',
-        fontSize:8,
+        fontSize: 8,
         alignSelf: 'center',
         borderRadius: 20,
         backgroundColor: COLORS.AlmostWhite,
         position: 'absolute',
-        height:30,
-        marginTop:85,
+        height: 30,
+        marginTop: 85,
         fontFamily: "Ubuntu-Regular"
     },
     LoginButtonStyle:

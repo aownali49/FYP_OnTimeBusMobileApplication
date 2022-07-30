@@ -17,7 +17,8 @@ export const COLORS = {
     RegisterGray:"#909090",
     RupeesPink:"#FF8B8B",
     TransactionCardBeige:'#FFFFFF',
-    BluishBalance:'#F0EBE3'
+    BluishBalance:'#F0EBE3',
+    // Yellow:'#'
 
 };
 export const SIZES = {
