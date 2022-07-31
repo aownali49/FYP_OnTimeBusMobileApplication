@@ -41,7 +41,7 @@ const BottomTabShow = () => {
                                 style={{
                                     width: 30,
                                     height: 30,
-                                    tintColor: focused ? COLORS.blue : COLORS.white
+                                    tintColor: focused ? COLORS.RupeesPink : COLORS.white
                                 }}
                             />
                         </View>
@@ -58,7 +58,7 @@ const BottomTabShow = () => {
                                 style={{
                                     width: 30,
                                     height: 30,
-                                    tintColor: focused ? COLORS.blue : COLORS.white
+                                    tintColor: focused ? COLORS.RupeesPink : COLORS.white
                                 }}
                             />
                         </View>
@@ -75,7 +75,7 @@ const BottomTabShow = () => {
                                 style={{
                                     width: 30,
                                     height: 30,
-                                    tintColor: focused ? COLORS.blue : COLORS.white
+                                    tintColor: focused ? COLORS.RupeesPink : COLORS.white
                                 }}
                             />
                         </View>

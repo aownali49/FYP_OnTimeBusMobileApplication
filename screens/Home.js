@@ -11,9 +11,11 @@ var axios = require('axios');
 
 import MapViewDirections from 'react-native-maps-directions';
 import { Card } from 'react-native-shadow-cards';
+import { db } from '../firebase';
 const Home = () => {
 
     let _panel = useRef(null);
+    const [dataLoading, setDataLoading] = useState(true);
     const [sourceInput, setSource] = useState("");
     const [destinationInput, setDestination] = useState("");
     const [isModalVisible, setModalVisible] = useState(false);
@@ -28,97 +30,99 @@ const Home = () => {
     const _mapRef = useRef(null);
 
     //Total Stops List
-    const [stopsInfo, setStopInfo] = useState([
-        {
-            stopId: 1,
-            stopName: "Hostel E,F,G",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "2 mins",
-            stopCoordinates: {
-                latitude: 33.659123,
-                longitude: 73.034217,
-            }
-        },
-        {
-            stopId: 2,
-            stopName: "Girl's Hostel Stop",
-            stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
-            distance: "",
-            tta: "15 mins",
-            stopCoordinates: {
-                latitude: 33.657259,
-                longitude: 73.031897,
-            }
-        },
-        {
-            stopId: 3,
-            stopName: "Water Tank Stop",
-            stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
-            distance: "",
-            tta: "25 mins",
-            stopCoordinates: {
-                latitude: 33.655689,
-                longitude: 73.023094,
-            }
+    // const [stopsInfo, setStopInfo] = useState([
+    //     {
+    //         stopId: 1,
+    //         stopName: "Hostel E,F,G",
+    //         stopAddress: "H-10, Islamabad, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "2 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.659123,
+    //             longitude: 73.034217,
+    //         }
+    //     },
+    //     {
+    //         stopId: 2,
+    //         stopName: "Girl's Hostel Stop",
+    //         stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "15 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.657259,
+    //             longitude: 73.031897,
+    //         }
+    //     },
+    //     {
+    //         stopId: 3,
+    //         stopName: "Water Tank Stop",
+    //         stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "25 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.655689,
+    //             longitude: 73.023094,
+    //         }
 
-        },
-        {
-            stopId: 4,
-            stopName: "Zero Point IIUI",
-            stopAddress: "H-10, ICT, Pakistan",
-            distance: "",
-            tta: "25 mins",
-            stopCoordinates: {
-                latitude: 33.657067,
-                longitude: 73.022226,
-            }
-        },
-        {
-            stopId: 5,
-            stopName: "Hostel 5,6 Stop",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "10 mins",
-            stopCoordinates: {
-                latitude: 33.660778,
-                longitude: 73.021422,
-            }
-        },
-        {
-            stopId: 6,
-            stopName: "IIUI Security Camp",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "10 mins",
-            stopCoordinates: {
-                latitude: 33.662285,
-                longitude: 73.019017,
-            }
-        },
-        {
-            stopId: 7,
-            stopName: "FMS Stop",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "10 mins",
-            stopCoordinates: {
-                latitude: 33.663740,
-                longitude: 73.024782,
-            }
-        },
-        {
-            stopId: 8,
-            stopName: "Admin Stop",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "10 mins",
-            stopCoordinates: {
-                latitude: 33.662854,
-                longitude: 73.031017,
-            }
-        }
-    ])
+    //     },
+    //     {
+    //         stopId: 4,
+    //         stopName: "Zero Point IIUI",
+    //         stopAddress: "H-10, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "25 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.657067,
+    //             longitude: 73.022226,
+    //         }
+    //     },
+    //     {
+    //         stopId: 5,
+    //         stopName: "Hostel 5,6 Stop",
+    //         stopAddress: "H-10, Islamabad, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "10 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.660778,
+    //             longitude: 73.021422,
+    //         }
+    //     },
+    //     {
+    //         stopId: 6,
+    //         stopName: "IIUI Security Camp",
+    //         stopAddress: "H-10, Islamabad, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "10 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.662285,
+    //             longitude: 73.019017,
+    //         }
+    //     },
+    //     {
+    //         stopId: 7,
+    //         stopName: "FMS Stop",
+    //         stopAddress: "H-10, Islamabad, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "10 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.663740,
+    //             longitude: 73.024782,
+    //         }
+    //     },
+    //     {
+    //         stopId: 8,
+    //         stopName: "Admin Stop",
+    //         stopAddress: "H-10, Islamabad, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "10 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.662854,
+    //             longitude: 73.031017,
+    //         }
+    //     }
+    // ])
+
+    const [stopsInfo, setStopInfo] = useState([])
     // Route/Journey
     const [searchResult, setSearchResult] = useState([]);
 
@@ -157,6 +161,33 @@ const Home = () => {
             _draggedValue.removeAllListeners();
         }
     }, []);
+
+    useEffect(() => {
+        // try {
+        //     let stopsRef = db().collection('stops')
+        //     stopsInfo.forEach((stop) => {
+        //         stopsRef.doc(stop.stopName).set(stop)
+        //     })
+        // } catch (error) {
+
+        // }
+
+        try {
+            setDataLoading(true);
+            let stops = []
+            db().collection("stops").get().then((querySnapshot) => {
+                setDataLoading(false);
+                querySnapshot.forEach((doc) => {
+                    stops.push(doc.data())
+                });
+                setStopInfo(stops)
+
+            });
+        } catch (error) {
+            setDataLoading(false);
+        }
+
+    }, [])
 
     function buildRoute(oSrc, oDest) {
         var routeList = [];
@@ -269,24 +300,18 @@ const Home = () => {
                         stopsInfo.map(item => {
                             return (
                                 <Marker
+                                    title={item.stopName}
+                                    description={item.stopAddress}
                                     coordinate={item.stopCoordinates}
+                                    image={icons.busStop}
+                                    style={{
+                                        height:25,
+                                        width:25
+                                    }}
                                 />
                             )
                         })
                     }
-                    {/* <Marker
-                        coordinate={{ latitude: 33.504013, longitude: 73.102201 }}
-
-                    />
-                    <Marker
-                        coordinate={{ latitude: 33.503686, longitude: 73.100291 }}
-
-                    />
-                    <Marker
-                        coordinate={{ latitude: 33.505569, longitude: 73.092765 }}
-
-                    /> */}
-
                 </MapView>
             </View>
         )
@@ -310,7 +335,7 @@ const Home = () => {
                     onBottomReached={() => { setDragging(true) }}
                 >
                     <View style={{
-                        height: '100%', backgroundColor: COLORS.stopModalGray, borderTopLeftRadius: SIZES.radius * 2,
+                        height: '100%', backgroundColor: COLORS.BluishBalance, borderTopLeftRadius: SIZES.radius * 2,
                         borderTopRightRadius: SIZES.radius * 2, paddingBottom: 20,
                     }}>
                         <View style={{
@@ -330,6 +355,7 @@ const Home = () => {
                                 <Image
                                     source={icons.pinpoint}
                                     style={{
+                                        marginTop: 10,
                                         width: 25,
                                         height: 25,
                                     }}
@@ -338,6 +364,7 @@ const Home = () => {
                                     fontSize: 20,
                                     color: COLORS.black,
                                     marginLeft: 10,
+                                    marginTop: 10,
                                     fontFamily: "Ubuntu-Regular",
                                 }}
                                 >
@@ -352,49 +379,65 @@ const Home = () => {
                                 flex: 0.37,
                             }}
                         >
-                            <FlatList
-                                horizontal={true}
-                                contentContainerStyle={{ marginBottom: 10 }}
-                                data={stopsInfo}
-                                keyExtractor={item => item.id}
-                                extraData={selectedId}
-                                refreshing={refreshing}
-                                onRefresh={() => {
-                                    setRefreshing(true);
-                                    setTimeout(() => {
-                                        setRefreshing(false);
-                                    }, 2000)
-                                }}
-                                showsVerticalScrollIndicator={false}
-                                renderItem={({ item, index }) => {
-                                    return (
-                                        <Pressable
-                                            style={{
-                                                height: 110,
-                                                justifyContent: 'center'
-                                            }}
-                                            onPress={() => {
-                                                selectedId === item.stopId ? setSelectedId(null) : setSelectedId(item.stopId)
-                                                _mapRef.current.animateToRegion({
-                                                    ...item.stopCoordinates,
-                                                    latitudeDelta: 0.004864195844303443,
-                                                    longitudeDelta: 0.0040142817690068,
-                                                }, 350)
-                                            }
-                                            }
-                                        >
-                                            <NearbyStopsComponent data={{ item, index }} highlighted={selectedId} />
-                                        </Pressable>
-                                    )
-                                }}
-                            />
+                            {
+                                !dataLoading &&
+                                <FlatList
+                                    horizontal={true}
+                                    contentContainerStyle={{ marginBottom: 10 }}
+                                    data={stopsInfo}
+                                    keyExtractor={item => item.id}
+                                    extraData={selectedId}
+                                    refreshing={refreshing}
+                                    onRefresh={() => {
+                                        setRefreshing(true);
+                                        setTimeout(() => {
+                                            setRefreshing(false);
+                                        }, 2000)
+                                    }}
+                                    showsVerticalScrollIndicator={false}
+                                    renderItem={({ item, index }) => {
+                                        return (
+                                            <Pressable
+                                                style={{
+                                                    height: 110,
+                                                    justifyContent: 'center'
+                                                }}
+                                                onPress={() => {
+                                                    selectedId === item.stopId ? setSelectedId(null) : setSelectedId(item.stopId)
+                                                    _mapRef.current.animateToRegion({
+                                                        ...item.stopCoordinates,
+                                                        latitudeDelta: 0.004864195844303443,
+                                                        longitudeDelta: 0.0040142817690068,
+                                                    }, 350)
+                                                }
+                                                }
+                                            >
+                                                <NearbyStopsComponent data={{ item, index }} highlighted={selectedId} />
+                                            </Pressable>
+                                        )
+                                    }}
+                                />
+                            }
+                            {
+                                dataLoading &&
+                                <View
+                                    style={{
+                                        height: 100,
+                                        width: 100,
+                                        alignContent: 'center',
+                                        justifyContent: 'center',
+                                        alignSelf: 'center',
+                                    }}>
+                                    <ActivityIndicator size='large' />
+
+                                </View>
+                            }
 
                         </View>
                         <View
                             style={{
                                 flex: 0.5,
                                 marginBottom: -10,
-                                // borderWidth: 1,
                                 justifyContent: 'center',
                                 alignItems: 'center'
                             }}
@@ -469,7 +512,7 @@ const Home = () => {
                                                 color: COLORS.black,
                                             }}
                                         >
-                                            Address: 
+                                            Address:
                                             <Text
                                                 style={{
                                                     fontSize: 20,
@@ -687,6 +730,11 @@ const Home = () => {
                         }}
                     >
                         <TouchableOpacity
+                            style={{
+                                width: 25,
+
+
+                            }}
                             onPress={() => { setModalVisible(!isModalVisible) }}
                         >
                             <Image
@@ -694,10 +742,26 @@ const Home = () => {
                                     height: 25,
                                     width: 25,
                                     tintColor: COLORS.white,
+
                                 }}
                                 source={icons.back}
                             />
                         </TouchableOpacity>
+                        <View
+                            style={{
+                                borderWidth: 1,
+                                borderColor: COLORS.black,
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    height: 20,
+                                    fontFamily: 'Ubuntu-Regular'
+                                }}
+                            >
+                                Search Bus Routes:
+                            </Text>
+                        </View>
                     </View>
                     <View
                         style={{

@@ -7,7 +7,6 @@ import { Card } from 'react-native-shadow-cards';
 const ProfileCard = ({ option }) => {
 
     const optionData = option;
-    console.log("Personal Details", optionData);
     return (
         <Card
             style={styles.cardStyle}

@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import { dummy, COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Card } from 'react-native-shadow-cards';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
+import { auth, db } from '../firebase'
 NfcManager.start();
 const ScanCardRegisterScreen = ({ navigation }) => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -16,9 +17,9 @@ const ScanCardRegisterScreen = ({ navigation }) => {
             await NfcManager.requestTechnology(NfcTech.Ndef);
             // the resolved tag object will contain `ndefMessage` property
             const tag = await NfcManager.getTag();
-            console.log("Tag ID:",tag.id);
+            console.log("Tag ID:", tag.id);
             setCardNumber(tag.id);
-            
+
 
         } catch (ex) {
             console.warn('Oops!', ex);
@@ -27,7 +28,7 @@ const ScanCardRegisterScreen = ({ navigation }) => {
             NfcManager.cancelTechnologyRequest();
         }
     }
-    
+
     return (
         <View
             style={{
@@ -124,7 +125,19 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                         />
                     </Card>
                     <TouchableOpacity
-                        onPress={() => { }}
+                        onPress={() => {
+                            try {
+                                db()
+                                .collection('users')
+                                .doc(auth().currentUser.uid)
+                                .update({
+                                    'cardNumber':cardNumber
+                                })
+                                navigation.navigate('HomeStack')
+                            } catch (error) {
+                                
+                            }
+                        }}
                         style={styles.LoginButtonStyle}
                     >
                         <Text
@@ -214,32 +227,32 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                             {
                                 cardNumber &&
                                 <Text
-                                style={{
-                                    fontFamily: "Ubuntu-Regular",
-                                    fontSize: 15,
-                                    color: '#DCDCDC',
-                                    textAlign: 'center',
-                                    paddingHorizontal: 10,
-                                    marginTop: 20
-                                }}
-                            >
-                                Scan completed, continue to save card details.
-                            </Text>
+                                    style={{
+                                        fontFamily: "Ubuntu-Regular",
+                                        fontSize: 15,
+                                        color: '#DCDCDC',
+                                        textAlign: 'center',
+                                        paddingHorizontal: 10,
+                                        marginTop: 20
+                                    }}
+                                >
+                                    Scan completed, continue to save card details.
+                                </Text>
                             }
                             {
                                 !cardNumber &&
                                 <Text
-                                style={{
-                                    fontFamily: "Ubuntu-Regular",
-                                    fontSize: 15,
-                                    color: '#DCDCDC',
-                                    textAlign: 'center',
-                                    paddingHorizontal: 10,
-                                    marginTop: 20
-                                }}
-                            >
-                                Hold your phone near the QuickBus Card to Scan.
-                            </Text>
+                                    style={{
+                                        fontFamily: "Ubuntu-Regular",
+                                        fontSize: 15,
+                                        color: '#DCDCDC',
+                                        textAlign: 'center',
+                                        paddingHorizontal: 10,
+                                        marginTop: 20
+                                    }}
+                                >
+                                    Hold your phone near the QuickBus Card to Scan.
+                                </Text>
                             }
 
                             {

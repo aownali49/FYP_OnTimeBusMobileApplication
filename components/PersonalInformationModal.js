@@ -5,14 +5,24 @@ import { COLORS, SIZES, icons, FONTS } from '../constants'
 import { AreaCodesModal } from '../components'
 import DatePicker from 'react-native-date-picker'
 import Moment from 'moment';
+import { db, auth} from '../firebase'
 // import MapView from 'react-native-maps'
 
 const PersonalInformationModal = ({
     modalVisible, setModalVisible,
-    option
+    option,navigation
 }) => {
     Moment.locale('en');
-    const [date, setDate] = useState(new Date())
+    const [myDate, setDate] = useState(new Date());
+    const [personalDetail, setPersonalDetail] = useState({
+        firstName: "",
+        lastName: "",
+        phoneNumber: "",
+        dob: new Date(),
+        address1:"",
+        address2:""
+    });
+
     const [areaCodesModal, setAreaCodesModal] = useState(false)
     const [selectedArea, setSelectedArea] = useState('PK')
     const [areas, setAreas] = useState([])
@@ -95,15 +105,43 @@ const PersonalInformationModal = ({
                                 <TextInput
                                     placeholder='First Name'
                                     placeholderTextColor={'#B5B5B5'}
+                                    onChangeText = {(text) => {
+                                        setPersonalDetail({
+                                            ...personalDetail,
+                                            firstName: text
+                                        })
+                                    }}
+                                    value = {personalDetail.firstName}
                                     style={styles.EmailInputStyle}
                                 />
                                 <TextInput
                                     placeholder='Last Name'
                                     placeholderTextColor={'#B5B5B5'}
+                                    onChangeText = {(text) => {
+                                        setPersonalDetail({
+                                            ...personalDetail,
+                                            lastName: text
+                                        })
+                                    }}
+                                    value = {personalDetail.lastName}
                                     style={styles.EmailInputStyle}
                                 />
                                 <TouchableOpacity
-                                    onPress={() => { }}
+                                    onPress={() => {
+                                        try {
+                                            db()
+                                            .collection('users')
+                                            .doc(auth().currentUser.uid)
+                                            .update({
+                                                fullName: (personalDetail.firstName +" "+ personalDetail.lastName)
+                                            })
+                                            
+                                        } catch (error) {
+                                            console.log("Name Saving Error",error);
+                                        }
+
+                                        
+                                    }}
                                     style={styles.LoginButtonStyle}
                                 >
                                     <Text
@@ -145,10 +183,25 @@ const PersonalInformationModal = ({
                                 <TextInput
                                     placeholder='Email'
                                     placeholderTextColor={'#B5B5B5'}
+                                    onChange = {(text) => {
+                                        setPersonalDetail({
+                                            ...personalDetail,
+                                            email: text
+                                        })
+                                        
+                                    }}
+                                    value = {personalDetail.email}
                                     style={styles.EmailInputStyle}
                                 />
                                 <TouchableOpacity
-                                    onPress={() => { }}
+                                    onPress={() => { 
+                                        db()
+                                        .collection('users')
+                                        .doc(auth().currentUser.uid)
+                                        .update({
+                                            email: (personalDetail.email)
+                                        })
+                                    }}
                                     style={styles.LoginButtonStyle}
                                 >
                                     <Text
@@ -232,11 +285,25 @@ const PersonalInformationModal = ({
                                     <TextInput
                                         placeholder='Phone Number'
                                         placeholderTextColor={'#B5B5B5'}
+                                        onChangeText = {(text) => {
+                                            setPersonalDetail({
+                                                ...personalDetail,
+                                                phoneNumber: text
+                                            })
+                                            
+                                        }}
                                         style={styles.PhoneNumberInput}
                                     />
                                 </View>
                                 <TouchableOpacity
-                                    onPress={() => { }}
+                                    onPress={() => { 
+                                        db()
+                                        .collection('users')
+                                        .doc(auth().currentUser.uid)
+                                        .update({
+                                            phoneNumber: (selectedArea?.callingCode + " " + personalDetail.phoneNumber)
+                                        })
+                                    }}
                                     style={styles.LoginButtonStyle}
                                 >
                                     <Text
@@ -311,18 +378,26 @@ const PersonalInformationModal = ({
                                                 fontFamily: "Ubuntu-Regular",
                                                 textAlign: 'center'
                                             }}
-                                        >{Moment(date).format('DD MMMM YYYY')}</Text>
+                                        >{personalDetail.dob+""}</Text>
                                     </Pressable>
 
                                 </View>
-                                <View 
+                                <View
                                     style={{
                                         flex: 0.15,
-                                        marginTop:20,
+                                        marginTop: 20,
                                     }}
                                 >
                                     <TouchableOpacity
-                                        onPress={() => { }}
+                                        onPress={() => { 
+                                            db()
+                                        .collection('users')
+                                        .doc(auth().currentUser.uid)
+                                        .update({
+                                            dob: (personalDetail.dob)
+                                        })
+                                        console.log("Gone");
+                                        }}
                                         style={styles.LoginButtonStyle}
                                     >
                                         <Text
@@ -344,10 +419,14 @@ const PersonalInformationModal = ({
                                     maximumDate={new Date()}
                                     minimumDate={new Date('1900-01-01')}
                                     open={open}
-                                    date={date}
+                                    date={myDate}
                                     onConfirm={(date) => {
                                         setOpen(false)
                                         setDate(date)
+                                        setPersonalDetail({
+                                            ...personalDetail,
+                                            dob: Moment(date).format('DD MMMM YYYY')
+                                        })
                                     }}
                                     onCancel={() => {
                                         setOpen(false)
@@ -388,16 +467,38 @@ const PersonalInformationModal = ({
                                 <View>
                                     <TextInput
                                         placeholder='Address line 1'
+                                        onChangeText = {(text) => {
+                                            setPersonalDetail({
+                                                ...personalDetail,
+                                                address1: text
+                                            })
+                                            
+                                        }}
                                         placeholderTextColor={'#B5B5B5'}
                                         style={styles.EmailInputStyle}
                                     />
                                     <TextInput
                                         placeholder='Address line 2'
                                         placeholderTextColor={'#B5B5B5'}
+                                        onChangeText = {(text) => {
+                                            setPersonalDetail({
+                                                ...personalDetail,
+                                                address2: text
+                                            })
+                                            
+                                        }}
                                         style={styles.EmailInputStyle}
                                     />
                                     <TouchableOpacity
-                                        onPress={() => { }}
+                                        onPress={() => { 
+                                            db()
+                                            .collection('users')
+                                            .doc(auth().currentUser.uid)
+                                            .update({
+                                                address1: (personalDetail.address1),
+                                                address2: (personalDetail.address2)
+                                            })
+                                        }}
                                         style={styles.LoginButtonStyle}
                                     >
                                         <Text

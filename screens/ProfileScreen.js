@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import { COLORS, icons, SIZES } from '../constants'
 import { ProfileCard, PersonalInformationModal } from '../components';
 import SlidingUpPanel from 'rn-sliding-up-panel';
+import { auth, db } from '../firebase'
 // import PersonalInformationModal from '../components/PersonalInformationModal';
 
 
@@ -15,39 +16,69 @@ const ProfileSettingScreen = () => {
     const _draggedValue = useRef(new Animated.Value(0)).current;
     const [personalDetails, setPersonalDetails] = useState([
         {
-            id:'1',
+            id: '1',
             option: "Full name",
-            value: 'Usman Karamat',
+            value: 'Not Provided',
             icon: icons.accSettings
         },
         {
-            id:'2',
+            id: '2',
             option: "Email",
-            value: 'muhammed.usman77@gmail.com',
+            value: 'Not Provided',
             icon: icons.email
         },
         {
-            id:'3',
+            id: '3',
             option: "Phone Number",
-            value: '+923185204385',
+            value: 'Not Provided',
             icon: icons.phone
         },
         {
-            id:'4',
+            id: '4',
             option: "Date of birth",
-            value: '17-11-1999',
+            value: 'Not Provided',
             icon: icons.calendar
         },
         {
-            id:'5',
+            id: '5',
             option: "Home Address",
-            value: '657 Rafi Block, Bahria Town',
+            value: 'Not Provided',
             icon: icons.home
         },
 
     ])
-    const [sentOption,setSentOption] = useState(null);
-    
+    const [sentOption, setSentOption] = useState(null);
+
+    useEffect(() => {
+        // db()
+        // .collection('users')
+        // .doc(auth().currentUser.uid)
+        // .update({
+        //     fullName:personalDetails[0].value,
+        //     email: personalDetails[1].value,
+        //     phoneNumber:personalDetails[2].value,
+        //     dob: personalDetails[3].value,
+        //     address: personalDetails[4].value
+
+        // })
+
+        try {
+            db()
+                .collection("users")
+                .doc(auth().currentUser.uid)
+                .get().then((doc) => {
+                    setPersonalDetails([
+                        { ...personalDetails[0], value: doc.data().fullName },
+                        { ...personalDetails[1], value: doc.data().email },
+                        { ...personalDetails[2], value: doc.data().phoneNumber },
+                        { ...personalDetails[3], value: doc.data().dob },
+                        { ...personalDetails[4], value: doc.data().address }
+                    ])
+                })
+        } catch (error) {
+        }
+    }, []);
+
     function RenderList() {
         return (
             <View
@@ -91,7 +122,6 @@ const ProfileSettingScreen = () => {
                             )
                         }}
                     />
-
                 </View>
             </View >
         )
@@ -102,7 +132,7 @@ const ProfileSettingScreen = () => {
         }}>
             {RenderList()}
 
-            <PersonalInformationModal modalVisible={isModalVisible} setModalVisible={setModalVisible} option={sentOption}/>
+            <PersonalInformationModal modalVisible={isModalVisible} setModalVisible={setModalVisible} option={sentOption} />
 
 
         </View>
