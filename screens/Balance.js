@@ -1,148 +1,126 @@
-import { StyleSheet, Text, View, Image, ImageBackground, FlatList, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Image, ImageBackground, FlatList, Pressable,ActivityIndicator } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
 import { COLORS, images, SIZES, icons } from '../constants'
 import { Card } from 'react-native-shadow-cards';
 import * as Animatable from 'react-native-animatable';
 import { TransactionCard } from '../components';
+import { auth, db } from '../firebase';
 
-const Balance = ({navigation}) => {
-    const [stopsInfo, setStopInfo] = useState([
-        {
-            stopId: 1,
-            stopName: "Hostel E,F,G",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "2 mins",
-            stopCoordinates: {
-                latitude: 33.659123,
-                longitude: 73.034217,
-            }
-        },
-        {
-            stopId: 2,
-            stopName: "Girl's Hostel Stop",
-            stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
-            distance: "",
-            tta: "15 mins",
-            stopCoordinates: {
-                latitude: 33.657259,
-                longitude: 73.031897,
-            }
-        },
-        {
-            stopId: 3,
-            stopName: "Water Tank Stop",
-            stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
-            distance: "",
-            tta: "25 mins",
-            stopCoordinates: {
-                latitude: 33.655689,
-                longitude: 73.023094,
-            }
+const Balance = ({ navigation }) => {
+    // const [stopsInfo, setStopInfo] = useState([
+    //     {
+    //         stopId: 1,
+    //         stopName: "Hostel E,F,G",
+    //         stopAddress: "H-10, Islamabad, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "2 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.659123,
+    //             longitude: 73.034217,
+    //         }
+    //     },
+    //     {
+    //         stopId: 2,
+    //         stopName: "Girl's Hostel Stop",
+    //         stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "15 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.657259,
+    //             longitude: 73.031897,
+    //         }
+    //     },
+    //     {
+    //         stopId: 3,
+    //         stopName: "Water Tank Stop",
+    //         stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "25 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.655689,
+    //             longitude: 73.023094,
+    //         }
 
-        },
-        {
-            stopId: 4,
-            stopName: "Zero Point IIUI",
-            stopAddress: "H-10, ICT, Pakistan",
-            distance: "",
-            tta: "25 mins",
-            stopCoordinates: {
-                latitude: 33.657067,
-                longitude: 73.022226,
+    //     },
+    //     {
+    //         stopId: 4,
+    //         stopName: "Zero Point IIUI",
+    //         stopAddress: "H-10, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "25 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.657067,
+    //             longitude: 73.022226,
+    //         }
+    //     },
+    //     {
+    //         stopId: 5,
+    //         stopName: "Hostel 5,6 Stop",
+    //         stopAddress: "H-10, Islamabad, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "10 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.660778,
+    //             longitude: 73.021422,
+    //         }
+    //     },
+    //     {
+    //         stopId: 6,
+    //         stopName: "IIUI Security Camp",
+    //         stopAddress: "H-10, Islamabad, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "10 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.662285,
+    //             longitude: 73.019017,
+    //         }
+    //     },
+    //     {
+    //         stopId: 7,
+    //         stopName: "FMS Stop",
+    //         stopAddress: "H-10, Islamabad, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "10 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.663740,
+    //             longitude: 73.024782,
+    //         }
+    //     },
+    //     {
+    //         stopId: 8,
+    //         stopName: "Admin Stop",
+    //         stopAddress: "H-10, Islamabad, ICT, Pakistan",
+    //         distance: "",
+    //         tta: "10 mins",
+    //         stopCoordinates: {
+    //             latitude: 33.662854,
+    //             longitude: 73.031017,
+    //         }
+    //     }
+    // ])
+    const [transactionInfo, setTransactionInfo] = useState([]);
+    const [dataLoading, setDataLoading] = useState(true);
+
+    //get transaction history
+    useEffect(() => {
+        setDataLoading(true);
+        var docRef = db().collection("users").doc(auth().currentUser.uid);
+        docRef.get().then((doc) => {
+            // doc.data().fullName
+            setDataLoading(false);
+            if (doc.exists) {
+                console.log("User Information", doc.data());
+                setTransactionInfo(doc.data().transactionInfo)
+            } else {
+                // console.log("No such document!");
             }
-        },
-        {
-            stopId: 5,
-            stopName: "Hostel 5,6 Stop",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "10 mins",
-            stopCoordinates: {
-                latitude: 33.660778,
-                longitude: 73.021422,
-            }
-        },
-        {
-            stopId: 6,
-            stopName: "IIUI Security Camp",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "10 mins",
-            stopCoordinates: {
-                latitude: 33.662285,
-                longitude: 73.019017,
-            }
-        },
-        {
-            stopId: 7,
-            stopName: "FMS Stop",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "10 mins",
-            stopCoordinates: {
-                latitude: 33.663740,
-                longitude: 73.024782,
-            }
-        },
-        {
-            stopId: 8,
-            stopName: "Admin Stop",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "10 mins",
-            stopCoordinates: {
-                latitude: 33.662854,
-                longitude: 73.031017,
-            }
-        }
-    ])
-    const [transactionInfo, setTransactionInfo] = useState([
-        {
-            transactionId: "1",
-            origStopId: 1,
-            destStopId: 2,
-            origStopName:"",
-            destStopName:'',
-            amount:'Rs.100'
-        },
-        {
-            transactionId: "2",
-            origStopId: 3,
-            origStopName:"",
-            destStopName:'',
-            destStopId: 5,
-            amount:'Rs.100'
-        },
-        {
-            transactionId: "3",
-            origStopId: 2,
-            origStopName:"",
-            destStopName:'',
-            destStopId: 7,
-            amount:'Rs.100'
-        },
-        {
-            transactionId: "1",
-            origStopId: 1,
-            origStopName:"",
-            destStopName:'',
-            destStopId: 8,
-            amount:'Rs.100'
-        },
-        {
-            transactionId: "4",
-            origStopId: 8,
-            origStopName:"",
-            destStopName:'',
-            destStopId: 1,
-            amount:'Rs.100'
-        }
-    ])
-    transactionInfo.forEach(item=>{
-        item.origStopName = stopsInfo[stopsInfo.findIndex(stop=>{return stop.stopId===item.origStopId})].stopName;
-        item.destStopName = stopsInfo[stopsInfo.findIndex(stop=>{return stop.stopId===item.destStopId})].stopName;
-    })
+        }).catch((error) => {
+            setDataLoading(false);
+            console.log("Error getting document:", error);
+        });
+    }, [navigation])
+
+    //get user info
 
     return (
         <View
@@ -266,34 +244,50 @@ const Balance = ({navigation}) => {
                         }}
                     >Transaction History</Text>
 
-                    <View
-                        style={{
-                            flex: 1,
-                        }}
-                    >
-
-                        <FlatList
+                    {
+                        !dataLoading && 
+                        <View
                             style={{
-                                marginTop: 10,
-                                marginBottom: 60
+                                flex: 1,
                             }}
-                            data={transactionInfo}
-                            keyExtractor={item => item.id}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => {
-                                return (
-                                    <Pressable
-                                        onPress={() => {
-                                            navigation.navigate('TicketScreen',{item})
-                                        }}
-                                    >
-                                        <TransactionCard data={item} />
-                                    </Pressable>
-                                )
-                            }}
-                        />
-                    </View>
+                        >
 
+                            <FlatList
+                                style={{
+                                    marginTop: 10,
+                                    marginBottom: 60
+                                }}
+                                data={transactionInfo}
+                                keyExtractor={item => item.id}
+                                showsVerticalScrollIndicator={false}
+                                renderItem={({ item }) => {
+                                    return (
+                                        <Pressable
+                                            onPress={() => {
+                                                navigation.navigate('TicketScreen', { item })
+                                            }}
+                                        >
+                                            <TransactionCard data={item} />
+                                        </Pressable>
+                                    )
+                                }}
+                            />
+                        </View>
+                    }
+                    {
+                        dataLoading &&
+                        <View
+                            style={{
+                                height: 100,
+                                width: 100,
+                                alignContent: 'center',
+                                justifyContent: 'center',
+                                alignSelf: 'center',
+                            }}>
+                            <ActivityIndicator size='large' />
+
+                        </View>
+                    }
                 </View>
 
             </Animatable.View>

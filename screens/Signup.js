@@ -1,24 +1,32 @@
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Pressable } from 'react-native'
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { dummy, COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Card } from 'react-native-shadow-cards';
-import {auth, db} from '../firebase'
+import { auth, db } from '../firebase';
+import * as Animatable from 'react-native-animatable'
+
 
 const Signup = ({ navigation }) => {
     const [data, setData] = useState({
         email: '',
         password: '',
         confirm_password: '',
-        check_textInputChange: false,
+        check_textInputChange: true,
         secureTextEntry: true,
         confirm_secureTextEntry: true,
         isValidPassword: true,
         isValidConfirmPassword: true,
     });
 
+    const [userCredentials, setUserCredentials] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [passwordValidator, setPasswordValidator] = useState(false);
+    const [emailValidator, setEmailValidator] = useState(false);
+    const [errorModal, setErrorModal] = useState(false);
+
     const handleSignUp = () => {
         auth()
-            .createUserWithEmailAndPassword(data.email, data.password)
+            .createUserWithEmailAndPassword(data.email.toLowerCase(), data.password)
             .then(userCredentials => {
                 const user = userCredentials.user
                 // user.sendEmailVerification()
@@ -35,11 +43,17 @@ const Signup = ({ navigation }) => {
                 navigation.replace('ScanCard')
             })
             .catch(error => {
-                // setModalVisible(!modalVisible)
-                // setAlert({
-                //     title: 'Error',
-                //     message: error.message
-                // });
+                console.log(error)
+                if (error.message.includes("[auth/email-already-in-use]")) {
+                    setErrorMessage("This email already belongs to a registered account.");
+                }
+                else if (error.message.includes("[auth/wrong-password]")) {
+                    setErrorMessage("Incorrect email/password combination.")
+                }
+                else {
+                    setErrorMessage(error.message)
+                }
+                setErrorModal(true)
             });
     };
 
@@ -155,37 +169,105 @@ const Signup = ({ navigation }) => {
                         value={data.email}
                         style={styles.EmailInputStyle}
                     ></TextInput>
+                    {
+                        !data.check_textInputChange &&
+                        <Text
+                            style={{
+                                position: 'absolute',
+                                top: 100,
+                                alignSelf: 'center',
+                                fontFamily: "Ubuntu-Regular",
+                                fontSize: 12,
+                                color: '#DCDCDC',
+                                textAlign: 'center',
+                                paddingHorizontal: 10,
+                                marginTop: 20,
+                                color: '#FF0000'
+                            }}
+                        >
+                            Please enter a valid username.
+                        </Text>
+                    }
                     <TextInput
                         placeholder='Password'
                         placeholderTextColor={'#B5B5B5'}
+                        secureTextEntry={data.secureTextEntry}
                         onChangeText={(value) => passwordChangeHandler(value)}
                         value={data.password}
                         style={styles.PasswordInputStyle}
                     ></TextInput>
-
+                    {
+                        !data.isValidPassword &&
+                        <Text
+                            style={{
+                                position: 'absolute',
+                                top: 170,
+                                alignSelf: 'center',
+                                fontFamily: "Ubuntu-Regular",
+                                fontSize: 12,
+                                color: '#DCDCDC',
+                                textAlign: 'center',
+                                paddingHorizontal: 10,
+                                marginTop: 20,
+                                color: '#FF0000'
+                            }}
+                        >
+                            Password should be atleast 6 characters long.
+                        </Text>
+                    }
                     <TextInput
                         placeholder='Re-Enter Password'
                         placeholderTextColor={'#B5B5B5'}
-                        onChangeText={(value) => confirmPasswordChangeHandler(value)}
+                        secureTextEntry={data.secureTextEntry}
+                        onChangeText={(value) => {
+                            confirmPasswordChangeHandler(value)
+                        }}
                         value={data.confirm_password}
                         style={styles.PasswordReEnterInputStyle}
-                    ></TextInput>
-
+                    />
+                    {
+                        !data.isValidConfirmPassword &&
+                        <Text
+                            style={{
+                                position: 'absolute',
+                                top: 240,
+                                fontFamily: "Ubuntu-Regular",
+                                alignSelf: 'center',
+                                fontSize: 12,
+                                color: '#DCDCDC',
+                                textAlign: 'center',
+                                paddingHorizontal: 10,
+                                marginTop: 20,
+                                color: '#FF0000'
+                            }}
+                        >
+                            Password and confirm password do not match.
+                        </Text>
+                    }
                     <TouchableOpacity
+                        disabled={!data.check_textInputChange || !data.isValidPassword || !data.isValidConfirmPassword || data.password.length === 0 || data.email.length === 0}
                         onPress={() => handleSignUp()}
-                        style={styles.LoginButtonStyle}
+                        style={{
+                            position: 'absolute',
+                            top: 290,
+                            height: 39,
+                            width: 136,
+                            borderRadius: 10,
+                            backgroundColor: (!data.check_textInputChange || !data.isValidPassword || !data.isValidConfirmPassword || data.password.length === 0 || data.email.length === 0) ? COLORS.LoginButtonDisabled : COLORS.LoginGreen,
+                            alignSelf: 'center',
+                            textAlign: 'center',
+                        }}
                     >
                         <Text
                             style={styles.ButtonTextStyle}
                         >Register</Text>
                     </TouchableOpacity>
-
                     <Pressable
                         onPress={() => { navigation.navigate('Login') }}
                         style={({ pressed }) => [
                             {
                                 backgroundColor: pressed ? COLORS.AlmostWhite : COLORS.stopModalGray,
-                                top: 280,
+                                top: 310,
                                 borderRadius: 8,
                                 padding: 6
                             }
@@ -195,19 +277,92 @@ const Signup = ({ navigation }) => {
                             style={{
                                 textAlign: 'center',
                                 fontSize: 12,
+                                // position:'relative',
+                                // top:20,
                                 fontFamily: "Ubuntu-Regular",
                                 color: COLORS.black
                             }}
-
                         > Already have an account? Press here to login. </Text>
                     </Pressable>
-
-
-
-
-
                 </Card>
 
+                {
+                    errorModal &&
+                    <Animatable.View
+                        animation='fadeInUpBig'
+                    >
+                        <Card
+                            animationType='fade'
+                            style={{
+                                height: 300, width: 300,
+                                backgroundColor: COLORS.white,
+                                borderRadius: 20,
+                                alignSelf: 'center',
+                                top: 200,
+                                elevation: 50,
+                                flexDirection: 'column'
+                            }}>
+                            <Text
+                                style={{
+                                    fontFamily: "Ubuntu-Regular",
+                                    fontSize: 25,
+                                    color: COLORS.gray,
+                                    textAlign: 'center',
+                                    marginTop: 20
+                                }}
+                            >
+                                Login Error
+                            </Text>
+                            <Image
+                                style={{
+                                    alignSelf: 'center',
+                                    marginTop: 30,
+                                    height: 100,
+                                    width: 100,
+                                    tintColor: COLORS.RupeesPink
+                                }}
+                                source={icons.exclamation}
+                            />
+                            <Text
+                                style={{
+                                    fontFamily: "Ubuntu-Regular",
+                                    fontSize: 15,
+                                    color: '#DCDCDC',
+                                    textAlign: 'center',
+                                    paddingHorizontal: 10,
+                                    marginTop: 20
+                                }}
+                            >
+                                {errorMessage}
+                            </Text>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setErrorModal(false);
+                                    setErrorMessage("");
+                                    setEmailValidator(true);
+                                    setPasswordValidator(true);
+                                    setData({
+                                        username: "",
+                                        password: ""
+                                    })
+                                }}
+                                style={{
+                                    height: 39,
+                                    width: 110,
+                                    borderRadius: 20,
+                                    top: 10,
+                                    backgroundColor: COLORS.LoginGreen,
+                                    alignSelf: 'center',
+                                    textAlign: 'center',
+                                }}
+                            >
+                                <Text
+                                    style={styles.ButtonTextStyle}
+                                >Continue</Text>
+                            </TouchableOpacity>
+                        </Card>
+                    </Animatable.View>
+                }
 
             </View>
 
@@ -243,7 +398,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         backgroundColor: COLORS.AlmostWhite,
         position: 'absolute',
-        top: 130,
+        top: 140,
         fontFamily: "Ubuntu-Regular"
     },
     PasswordReEnterInputStyle: {
@@ -254,20 +409,20 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         backgroundColor: COLORS.AlmostWhite,
         position: 'absolute',
-        top: 190,
+        top: 210,
         fontFamily: "Ubuntu-Regular"
     },
-    LoginButtonStyle:
-    {
-        position: 'absolute',
-        top: 260,
-        height: 39,
-        width: 136,
-        borderRadius: 10,
-        backgroundColor: COLORS.LoginGreen,
-        alignSelf: 'center',
-        textAlign: 'center',
-    },
+    // LoginButtonStyle:
+    // {
+    //     position: 'absolute',
+    //     top: 290,
+    //     height: 39,
+    //     width: 136,
+    //     borderRadius: 10,
+    //     backgroundColor: (passwordValidator || emailValidator || data.password.length === 0 || data.username.length === 0) ? COLORS.LoginButtonDisabled : COLORS.LoginGreen,
+    //     alignSelf: 'center',
+    //     textAlign: 'center',
+    // },
     RegisterButton:
     {
         position: 'absolute',

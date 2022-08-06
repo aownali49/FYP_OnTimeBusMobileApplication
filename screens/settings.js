@@ -2,17 +2,12 @@ import { StyleSheet, Text, View, Image, ImageBackground, FlatList, Pressable } f
 import React, { useRef, useEffect, useState } from 'react'
 import { COLORS, images, SIZES, icons } from '../constants'
 import { Card } from 'react-native-shadow-cards';
+import { auth, db } from '../firebase';
+import { useIsFocused } from '@react-navigation/native'
 
 
 
 const Settings = ({ navigation }) => {
-
-  const [userInfo, setUserInfo] = useState({
-    image: icons.accSettings,
-    fullName: 'Usman Karamat',
-    email:'muhammed.usman77@gmail.com'
-  })
-
   const [settingsList, setSettingsList] = useState([
     {
       settingName: "Profile Settings",
@@ -41,6 +36,35 @@ const Settings = ({ navigation }) => {
     },
 
   ])
+
+  const [userInfo, setUserInfo] = useState({
+    image: icons.accSettings,
+    fullName: 'Not Provided',
+    email: 'Not Provided'
+  })
+
+  useEffect(() => {
+    var docRef = db().collection("users").doc(auth().currentUser.uid);
+    docRef.get().then((doc) => {
+      // doc.data().fullName
+      if (doc.exists) {
+        console.log("User Information", doc.data());
+
+        setUserInfo({
+          ...userInfo,
+          fullName:doc.data().fullName,
+          email:doc.data().email
+        })
+        
+      } else {
+        console.log("No such document!");
+      }
+    }).catch((error) => {
+      console.log("Error getting document:", error);
+    });
+
+
+  }, [navigation,useIsFocused])
   return (
     <View
       style={styles.containerStyle}
@@ -90,7 +114,7 @@ const Settings = ({ navigation }) => {
               <View
                 style={{
                   flex: 0.7,
-                  justifyContent:'center'
+                  justifyContent: 'center'
                 }}
               >
                 <Text

@@ -30,6 +30,9 @@ const from= require("../assets/icons/from.png");
 const dollar= require("../assets/icons/sack-dollar.png");
 const clock= require("../assets/icons/clock.png");
 const nfcIcon= require("../assets/icons/nfcIcon.png");
+const noJourney = require("../assets/icons/noJourney.png");
+const pinpoint2 = require("../assets/icons/pin-point.png");
+const exclamation = require("../assets/icons/exclamation.png");
 
 export default {
 bus,
@@ -63,5 +66,8 @@ destination,
 from,
 dollar,
 clock,
-nfcIcon
+nfcIcon,
+noJourney,
+pinpoint2,
+exclamation
 }

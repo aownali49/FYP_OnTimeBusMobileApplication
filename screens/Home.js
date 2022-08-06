@@ -7,14 +7,21 @@ import { LineDivider, Thumb, StopCard, NearbyStopsComponent } from '../component
 import SearchResultCard from '../components/SearchResultCard';
 import GOOGLE_MAPS_API from './GoogleMapsAPI';
 var axios = require('axios');
-
+import { auth, db, realdb, firebase } from '../firebase'
 
 import MapViewDirections from 'react-native-maps-directions';
 import { Card } from 'react-native-shadow-cards';
-import { db } from '../firebase';
-const Home = () => {
-
+const Home = ({ navigation }) => {
     let _panel = useRef(null);
+    const [userData, setUserData] = useState({})
+    const [journey, setJourney] = useState([])
+    const [journeyInfo, setJourneyInfo] = useState({
+        source: "",
+        destination: "",
+        cardNumber: "",
+        timeStamp: ""
+    });
+    const [action, setAction] = useState('child_added');
     const [dataLoading, setDataLoading] = useState(true);
     const [sourceInput, setSource] = useState("");
     const [destinationInput, setDestination] = useState("");
@@ -26,7 +33,6 @@ const Home = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [searching, setSearching] = useState(false);
     // const [sourceAddress, setSourceAddress] = useState("");
-    useEffect(() => { }, [selectedId])
     const _mapRef = useRef(null);
 
     //Total Stops List
@@ -161,17 +167,8 @@ const Home = () => {
             _draggedValue.removeAllListeners();
         }
     }, []);
-
+    //Stops info
     useEffect(() => {
-        // try {
-        //     let stopsRef = db().collection('stops')
-        //     stopsInfo.forEach((stop) => {
-        //         stopsRef.doc(stop.stopName).set(stop)
-        //     })
-        // } catch (error) {
-
-        // }
-
         try {
             setDataLoading(true);
             let stops = []
@@ -186,8 +183,45 @@ const Home = () => {
         } catch (error) {
             setDataLoading(false);
         }
+    }, [])
+
+    //USer Info
+    useEffect(() => {
+        var docRef = db().collection("users").doc(auth().currentUser.uid);
+        docRef.get().then((doc) => {
+
+            if (doc.exists) {
+                console.log("User Information", doc.data());
+
+                setUserData(doc.data())
+            } else {
+                console.log("No such document!");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+
 
     }, [])
+
+    // useEffect(() => {
+    //     console.log("Running live fetch (Home)");
+    //     const onValueChange = realdb()
+    //         .ref('/Journey/1941094527')
+    //         .on(action, snapshot => {
+    //             console.log('User data from home screen: ', snapshot.val());
+    //             setJourney((p) => {return[...p, snapshot.val()]});
+    //         });
+    //     // Stop listening for updates when no longer required
+    //     return () => realdb().ref(`/Journey/1941094527`).off(action, onValueChange);
+    // }, [navigation]);
+
+    // useEffect(() => {
+    //     console.log("Set journey invoked (home): ", journey)
+
+    // }, [journey])
+
+
 
     function buildRoute(oSrc, oDest) {
         var routeList = [];
@@ -305,8 +339,8 @@ const Home = () => {
                                     coordinate={item.stopCoordinates}
                                     image={icons.busStop}
                                     style={{
-                                        height:25,
-                                        width:25
+                                        height: 25,
+                                        width: 25
                                     }}
                                 />
                             )
@@ -1225,6 +1259,13 @@ const Home = () => {
 
     return (
         <View style={styles.HOME}>
+            <View>
+                <Text>Card Number:{journeyInfo.cardNumber}</Text>
+                <Text>Source:{journeyInfo.source}</Text>
+                <Text>Destination:{journeyInfo.destination}</Text>
+                <Text>TimeStamp:{journeyInfo.timeStamp}</Text>
+            </View>
+
             {renderSearchResultModal()}
             {renderMap()}
             {renderSwipeUpModal()}

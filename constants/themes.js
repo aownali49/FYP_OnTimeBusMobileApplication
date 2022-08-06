@@ -14,6 +14,7 @@ export const COLORS = {
     slateGray:"#2C2E35",
     AlmostWhite:'#FFFEFE',
     LoginGreen:"#9CE3A8",
+    LoginButtonDisabled:"rgba(156, 227, 168,0.5)",
     RegisterGray:"#909090",
     RupeesPink:"#FF8B8B",
     TransactionCardBeige:'#FFFFFF',

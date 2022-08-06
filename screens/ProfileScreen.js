@@ -3,13 +3,15 @@ import React, { useRef, useEffect, useState } from 'react'
 import { COLORS, icons, SIZES } from '../constants'
 import { ProfileCard, PersonalInformationModal } from '../components';
 import SlidingUpPanel from 'rn-sliding-up-panel';
-import { auth, db } from '../firebase'
+import { auth, db } from '../firebase';
+import { useIsFocused } from '@react-navigation/native'
 // import PersonalInformationModal from '../components/PersonalInformationModal';
 
 
 
 const ProfileSettingScreen = () => {
     let _panel = useRef(null);
+    const isFocused = useIsFocused()
     const [isModalVisible, setModalVisible] = useState(false);
     const [isResultVisible, setResultVisible] = useState(false);
     const [dragging, setDragging] = useState(true);
@@ -50,34 +52,23 @@ const ProfileSettingScreen = () => {
     const [sentOption, setSentOption] = useState(null);
 
     useEffect(() => {
-        // db()
-        // .collection('users')
-        // .doc(auth().currentUser.uid)
-        // .update({
-        //     fullName:personalDetails[0].value,
-        //     email: personalDetails[1].value,
-        //     phoneNumber:personalDetails[2].value,
-        //     dob: personalDetails[3].value,
-        //     address: personalDetails[4].value
-
-        // })
-
         try {
             db()
                 .collection("users")
                 .doc(auth().currentUser.uid)
                 .get().then((doc) => {
                     setPersonalDetails([
-                        { ...personalDetails[0], value: doc.data().fullName },
-                        { ...personalDetails[1], value: doc.data().email },
-                        { ...personalDetails[2], value: doc.data().phoneNumber },
-                        { ...personalDetails[3], value: doc.data().dob },
-                        { ...personalDetails[4], value: doc.data().address }
+                        { ...personalDetails[0], value: ( doc.data().fullName==""||doc.data().fullName==undefined)?"Not Provided":doc.data().fullName },
+                        { ...personalDetails[1], value:( doc.data().email==""||doc.data().email==undefined)?"Not Provided":doc.data().email},
+                        { ...personalDetails[2], value:( doc.data().phoneNumber==""||doc.data().phoneNumber==undefined)?"Not Provided":doc.data().phoneNumber},
+                        { ...personalDetails[3], value:( doc.data().dob==""||doc.data().dob==undefined)?"Not Provided":doc.data().dob},
+                        { ...personalDetails[4], value: (doc.data().address==""||doc.data().address==undefined)?"Not Provided":doc.data().address}
                     ])
                 })
         } catch (error) {
+            console.log(error);
         }
-    }, []);
+    },[isFocused,isModalVisible]);
 
     function RenderList() {
         return (
@@ -131,12 +122,8 @@ const ProfileSettingScreen = () => {
             flex: 1
         }}>
             {RenderList()}
-
             <PersonalInformationModal modalVisible={isModalVisible} setModalVisible={setModalVisible} option={sentOption} />
-
-
         </View>
-
     )
 }
 

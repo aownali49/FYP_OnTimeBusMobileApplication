@@ -17,10 +17,13 @@ const ScanCardRegisterScreen = ({ navigation }) => {
             await NfcManager.requestTechnology(NfcTech.Ndef);
             // the resolved tag object will contain `ndefMessage` property
             const tag = await NfcManager.getTag();
-            console.log("Tag ID:", tag.id);
-            setCardNumber(tag.id);
-
-
+            let payload =tag.ndefMessage[0].payload;
+            let numArray="";
+            for (let index = 0; index < payload.length; index++) {
+                numArray =  numArray.concat(String.fromCharCode(payload[index]));
+            }
+            console.log("Tag ID:",numArray);
+            setCardNumber(numArray);
         } catch (ex) {
             console.warn('Oops!', ex);
         } finally {

@@ -29,8 +29,9 @@ const BottomTabShow = () => {
                     height: 50
                 }
             }}
+            initialRouteName='Home'
         >
-            <BottomTab.Screen name="Profile" component={JourneyScreen}
+            <BottomTab.Screen name="Profile" component={JourneyScreen} 
 
                 options={{
                     tabBarIcon: ({ focused }) => (

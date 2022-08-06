@@ -18,7 +18,7 @@ const PersonalInformationModal = ({
         firstName: "",
         lastName: "",
         phoneNumber: "",
-        dob: new Date(),
+        dob: Moment(myDate).format('DD MMMM YYYY'),
         address1:"",
         address2:""
     });
@@ -135,12 +135,11 @@ const PersonalInformationModal = ({
                                             .update({
                                                 fullName: (personalDetail.firstName +" "+ personalDetail.lastName)
                                             })
+                                            setModalVisible(!modalVisible)
                                             
                                         } catch (error) {
                                             console.log("Name Saving Error",error);
                                         }
-
-                                        
                                     }}
                                     style={styles.LoginButtonStyle}
                                 >
@@ -149,7 +148,7 @@ const PersonalInformationModal = ({
                                     >Save</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    onPress={() => { }}
+                                    onPress={() => {setModalVisible(!modalVisible) }}
                                     style={styles.RegisterButton}
                                 >
                                     <Text
@@ -201,6 +200,7 @@ const PersonalInformationModal = ({
                                         .update({
                                             email: (personalDetail.email)
                                         })
+                                        setModalVisible(!modalVisible)
                                     }}
                                     style={styles.LoginButtonStyle}
                                 >
@@ -209,7 +209,7 @@ const PersonalInformationModal = ({
                                     >Save</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    onPress={() => { }}
+                                    onPress={() => {setModalVisible(!modalVisible) }}
                                     style={styles.RegisterButton}
                                 >
                                     <Text
@@ -302,7 +302,8 @@ const PersonalInformationModal = ({
                                         .doc(auth().currentUser.uid)
                                         .update({
                                             phoneNumber: (selectedArea?.callingCode + " " + personalDetail.phoneNumber)
-                                        })
+                                        });
+                                        setModalVisible(!modalVisible)
                                     }}
                                     style={styles.LoginButtonStyle}
                                 >
@@ -311,7 +312,7 @@ const PersonalInformationModal = ({
                                     >Save</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    onPress={() => { }}
+                                    onPress={() => { setModalVisible(!modalVisible)}}
                                     style={styles.RegisterButton}
                                 >
                                     <Text
@@ -396,6 +397,7 @@ const PersonalInformationModal = ({
                                         .update({
                                             dob: (personalDetail.dob)
                                         })
+                                        setModalVisible(!modalVisible)
                                         console.log("Gone");
                                         }}
                                         style={styles.LoginButtonStyle}
@@ -405,7 +407,7 @@ const PersonalInformationModal = ({
                                         >Save</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
-                                        onPress={() => { }}
+                                        onPress={() => {setModalVisible(!modalVisible) }}
                                         style={styles.RegisterButton}
                                     >
                                         <Text
@@ -495,9 +497,10 @@ const PersonalInformationModal = ({
                                             .collection('users')
                                             .doc(auth().currentUser.uid)
                                             .update({
-                                                address1: (personalDetail.address1),
-                                                address2: (personalDetail.address2)
+                                                address: (personalDetail.address1 +" "+ personalDetail.address2),
+                                                // address2: (personalDetail.address2)
                                             })
+                                            setModalVisible(!modalVisible)
                                         }}
                                         style={styles.LoginButtonStyle}
                                     >
@@ -506,7 +509,7 @@ const PersonalInformationModal = ({
                                         >Save</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
-                                        onPress={() => { }}
+                                        onPress={() => {setModalVisible(!modalVisible) }}
                                         style={styles.RegisterButton}
                                     >
                                         <Text
