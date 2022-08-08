@@ -58,6 +58,7 @@ const Signup = ({ navigation }) => {
     };
 
     const addUser = (user) => {
+        console.log("New user being created",user);
         const userData = {
             'email': user.email
         }

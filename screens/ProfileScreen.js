@@ -105,7 +105,10 @@ const ProfileSettingScreen = () => {
                                 <Pressable
                                     onPress={() => {
                                         setSentOption(item.id)
-                                        setModalVisible(true)
+                                        if (item.id!=="2") 
+                                        {
+                                            setModalVisible(true)
+                                        } 
                                     }}
                                 >
                                     <ProfileCard option={item} />

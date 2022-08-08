@@ -172,14 +172,17 @@ const Home = ({ navigation }) => {
         try {
             setDataLoading(true);
             let stops = []
-            db().collection("stops").get().then((querySnapshot) => {
-                setDataLoading(false);
-                querySnapshot.forEach((doc) => {
-                    stops.push(doc.data())
+            db().collection("stops").get()
+                .then((querySnapshot) => {
+                    setDataLoading(false);
+                    querySnapshot.forEach((doc) => {
+                        stops.push(doc.data())
+                    });
+                    setStopInfo(stops)
+                    stopsInfo.map(stop=>{
+                        console.log("Stop:",stop.stopCoordinates);
+                    })
                 });
-                setStopInfo(stops)
-
-            });
         } catch (error) {
             setDataLoading(false);
         }
@@ -1259,13 +1262,6 @@ const Home = ({ navigation }) => {
 
     return (
         <View style={styles.HOME}>
-            <View>
-                <Text>Card Number:{journeyInfo.cardNumber}</Text>
-                <Text>Source:{journeyInfo.source}</Text>
-                <Text>Destination:{journeyInfo.destination}</Text>
-                <Text>TimeStamp:{journeyInfo.timeStamp}</Text>
-            </View>
-
             {renderSearchResultModal()}
             {renderMap()}
             {renderSwipeUpModal()}

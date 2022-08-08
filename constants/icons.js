@@ -12,7 +12,7 @@ const bus3 = require("../assets/icons/bus3.png");
 const rightarrow = require("../assets/icons/rightarrow.png");
 const downArrow = require("../assets/icons/downArrow.png");
 const online = require("../assets/icons/online.png");
-const pinpoint  = require("../assets/icons/placeholder.png")
+const pinpoint = require("../assets/icons/placeholder.png")
 const busStop = require("../assets/icons/bus-stop2.png");
 const accSettings = require("../assets/icons/acc-settings.png");
 const notification = require("../assets/icons/notifications.png");
@@ -24,50 +24,52 @@ const email = require("../assets/icons/email.png");
 const phone = require("../assets/icons/phone.png");
 const calendar = require("../assets/icons/calendar.png");
 const home = require("../assets/icons/home.png");
-const notFound= require("../assets/icons/notFound.png");
-const destination= require("../assets/icons/destination.png");
-const from= require("../assets/icons/from.png");
-const dollar= require("../assets/icons/sack-dollar.png");
-const clock= require("../assets/icons/clock.png");
-const nfcIcon= require("../assets/icons/nfcIcon.png");
+const notFound = require("../assets/icons/notFound.png");
+const destination = require("../assets/icons/destination.png");
+const from = require("../assets/icons/from.png");
+const dollar = require("../assets/icons/sack-dollar.png");
+const clock = require("../assets/icons/clock.png");
+const nfcIcon = require("../assets/icons/nfcIcon.png");
 const noJourney = require("../assets/icons/noJourney.png");
 const pinpoint2 = require("../assets/icons/pin-point.png");
 const exclamation = require("../assets/icons/exclamation.png");
+const busStick = require("../assets/icons/busStick.png");
 
 export default {
-bus,
-bus2,
-busStop,
-profile,
-settings,
-side_drawer,
-search,
-locationcenter,
-back,
-go,
-man,
-downArrow,
-rightarrow,
-bus3,
-online,
-pinpoint,
-accSettings,
-notification,
-help,
-balance,
-about,
-journey,
-email,
-phone,
-calendar,
-home,
-notFound,
-destination,
-from,
-dollar,
-clock,
-nfcIcon,
-noJourney,
-pinpoint2,
-exclamation
+    bus,
+    bus2,
+    busStop,
+    profile,
+    settings,
+    side_drawer,
+    search,
+    locationcenter,
+    back,
+    go,
+    man,
+    downArrow,
+    rightarrow,
+    bus3,
+    online,
+    pinpoint,
+    accSettings,
+    notification,
+    help,
+    balance,
+    about,
+    journey,
+    email,
+    phone,
+    calendar,
+    home,
+    notFound,
+    destination,
+    from,
+    dollar,
+    clock,
+    nfcIcon,
+    noJourney,
+    pinpoint2,
+    exclamation,
+    busStick
 }

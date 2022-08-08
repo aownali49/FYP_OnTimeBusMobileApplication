@@ -10,6 +10,8 @@ NfcManager.start();
 const ScanCardRegisterScreen = ({ navigation }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [cardNumber, setCardNumber] = useState(null);
+    const [errorModal, setErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     async function readNdef() {
         try {
@@ -17,12 +19,12 @@ const ScanCardRegisterScreen = ({ navigation }) => {
             await NfcManager.requestTechnology(NfcTech.Ndef);
             // the resolved tag object will contain `ndefMessage` property
             const tag = await NfcManager.getTag();
-            let payload =tag.ndefMessage[0].payload;
-            let numArray="";
+            let payload = tag.ndefMessage[0].payload;
+            let numArray = "";
             for (let index = 0; index < payload.length; index++) {
-                numArray =  numArray.concat(String.fromCharCode(payload[index]));
+                numArray = numArray.concat(String.fromCharCode(payload[index]));
             }
-            console.log("Tag ID:",numArray);
+            console.log("Tag ID:", numArray);
             setCardNumber(numArray);
         } catch (ex) {
             console.warn('Oops!', ex);
@@ -130,15 +132,22 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                     <TouchableOpacity
                         onPress={() => {
                             try {
-                                db()
-                                .collection('users')
-                                .doc(auth().currentUser.uid)
-                                .update({
-                                    'cardNumber':cardNumber
-                                })
-                                navigation.navigate('HomeStack')
+                                if (cardNumber.length !== 0) {
+                                    db()
+                                        .collection('users')
+                                        .doc(auth().currentUser.uid)
+                                        .update({
+                                            'cardNumber': cardNumber
+                                        })
+                                    navigation.navigate('HomeStack')
+                                }
+                                else
+                                {
+                                    setErrorMessage("Please enter a QuickBus card to continue")
+                                    setErrorModal(true);
+                                }
                             } catch (error) {
-                                
+
                             }
                         }}
                         style={styles.LoginButtonStyle}
@@ -175,8 +184,6 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                     <Animatable.View
                         animation='fadeInUpBig'
                     // animation='slideInDown'
-
-
                     >
                         <Card
                             animationType='fade'
@@ -300,6 +307,83 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                         </Card>
                     </Animatable.View>
                 }
+                {
+                    errorModal &&
+                    <Animatable.View
+                        animation='fadeInUpBig'
+                    >
+                        <Card
+                            animationType='fade'
+                            style={{
+                                height: 300, width: 300,
+                                backgroundColor: COLORS.white,
+                                borderRadius: 20,
+                                alignSelf: 'center',
+                                top: 200,
+                                elevation: 50,
+                                flexDirection: 'column'
+                            }}>
+                            <Text
+                                style={{
+                                    fontFamily: "Ubuntu-Regular",
+                                    fontSize: 25,
+                                    color: COLORS.gray,
+                                    textAlign: 'center',
+                                    marginTop: 20
+                                }}
+                            >
+                                Login Error
+                            </Text>
+                            <Image
+                                style={{
+                                    alignSelf: 'center',
+                                    marginTop: 30,
+                                    height: 100,
+                                    width: 100,
+                                    tintColor: COLORS.RupeesPink
+                                }}
+                                source={icons.exclamation}
+                            />
+                            <Text
+                                style={{
+                                    fontFamily: "Ubuntu-Regular",
+                                    fontSize: 15,
+                                    color: '#DCDCDC',
+                                    textAlign: 'center',
+                                    paddingHorizontal: 10,
+                                    marginTop: 20
+                                }}
+                            >
+                                {errorMessage}
+                            </Text>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setErrorModal(false);
+                                    setErrorMessage("");
+                                    setEmailValidator(true);
+                                    setPasswordValidator(true);
+                                    setData({
+                                        username: "",
+                                        password: ""
+                                    })
+                                }}
+                                style={{
+                                    height: 39,
+                                    width: 110,
+                                    borderRadius: 20,
+                                    top: 10,
+                                    backgroundColor: COLORS.LoginGreen,
+                                    alignSelf: 'center',
+                                    textAlign: 'center',
+                                }}
+                            >
+                                <Text
+                                    style={styles.ButtonTextStyle}
+                                >Continue</Text>
+                            </TouchableOpacity>
+                        </Card>
+                    </Animatable.View>
+                }
 
             </View>
         </View >
@@ -321,14 +405,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 25,
         color: COLORS.black,
         width: '85%',
-        fontSize: 8,
+        fontSize: 10,
         alignSelf: 'center',
         borderRadius: 20,
         backgroundColor: COLORS.AlmostWhite,
         position: 'absolute',
         height: 30,
         marginTop: 85,
-        fontFamily: "Ubuntu-Regular"
+        fontFamily: "Ubuntu-Regular",
     },
     LoginButtonStyle:
     {

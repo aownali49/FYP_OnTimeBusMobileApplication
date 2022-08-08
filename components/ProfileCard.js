@@ -48,6 +48,8 @@ const ProfileCard = ({ option }) => {
                     </Text>
                     <Text
                         style={{
+                            maxHeight:40,
+                            minWidth:optionData.id === "2"?220:180,
                             color: COLORS.lightGray,
                             fontSize: 15,
                             fontFamily: "Ubuntu-Regular"
@@ -63,15 +65,18 @@ const ProfileCard = ({ option }) => {
                         justifyContent: 'center'
                     }}
                 >
-                    <Image
-                        style={{
-                            height: 15,
-                            width: 15,
-                        }}
-                        source={
-                            icons.rightarrow
-                        }
-                    />
+                    {
+                        optionData.id !== "2" &&
+                        <Image
+                            style={{
+                                height: 15,
+                                width: 15,
+                            }}
+                            source={
+                                icons.rightarrow
+                            }
+                        />
+                    }
                 </View>
             </View>
         </Card>

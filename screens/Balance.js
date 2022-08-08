@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, ImageBackground, FlatList, Pressable,ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, Image, ImageBackground, FlatList, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
 import { COLORS, images, SIZES, icons } from '../constants'
 import { Card } from 'react-native-shadow-cards';
@@ -100,7 +100,9 @@ const Balance = ({ navigation }) => {
     // ])
     const [transactionInfo, setTransactionInfo] = useState([]);
     const [dataLoading, setDataLoading] = useState(true);
-
+    const [errorMessage, setErrorMessage] = useState("");
+    const [errorModal, setErrorModal] = useState(false);
+    const [refreshing,setRefreshing] = useState(false);
     //get transaction history
     useEffect(() => {
         setDataLoading(true);
@@ -109,8 +111,14 @@ const Balance = ({ navigation }) => {
             // doc.data().fullName
             setDataLoading(false);
             if (doc.exists) {
-                console.log("User Information", doc.data());
-                setTransactionInfo(doc.data().transactionInfo)
+                console.log("Balance Screen", doc.data());
+                if (doc.data().transactionInfo) {
+                    setTransactionInfo(doc.data().transactionInfo)
+                }
+                else {
+                    setErrorMessage("No Journey found, better get going now!")
+                    setErrorModal(true);
+                }
             } else {
                 // console.log("No such document!");
             }
@@ -118,7 +126,7 @@ const Balance = ({ navigation }) => {
             setDataLoading(false);
             console.log("Error getting document:", error);
         });
-    }, [navigation])
+    }, [navigation,refreshing])
 
     //get user info
 
@@ -245,7 +253,7 @@ const Balance = ({ navigation }) => {
                     >Transaction History</Text>
 
                     {
-                        !dataLoading && 
+                        !dataLoading &&
                         <View
                             style={{
                                 flex: 1,
@@ -288,6 +296,78 @@ const Balance = ({ navigation }) => {
 
                         </View>
                     }
+                    {
+                        errorModal &&
+                        <Animatable.View
+                            animation='fadeInUpBig'
+                        >
+                            <Card
+                                animationType='fade'
+                                style={{
+                                    height: 300, width: 300,
+                                    backgroundColor: COLORS.white,
+                                    borderRadius: 20,
+                                    alignSelf: 'center',
+                                    top: -70,
+                                    elevation: 50,
+                                    flexDirection: 'column'
+                                }}>
+                                <Text
+                                    style={{
+                                        fontFamily: "Ubuntu-Regular",
+                                        fontSize: 25,
+                                        color: COLORS.gray,
+                                        textAlign: 'center',
+                                        marginTop: 20
+                                    }}
+                                >
+                                    No Journey found
+                                </Text>
+                                <Image
+                                    style={{
+                                        alignSelf: 'center',
+                                        marginTop: 30,
+                                        height: 100,
+                                        width: 100,
+                                        // tintColor: COLORS.RupeesPink
+                                    }}
+                                    source={icons.busStick}
+                                />
+                                <Text
+                                    style={{
+                                        fontFamily: "Ubuntu-Regular",
+                                        fontSize: 15,
+                                        color: '#DCDCDC',
+                                        textAlign: 'center',
+                                        paddingHorizontal: 10,
+                                        marginTop: 20
+                                    }}
+                                >
+                                    {errorMessage}
+                                </Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setErrorModal(false);
+                                        setErrorMessage("");
+                                        setRefreshing(!refreshing);
+                                    }}
+                                    style={{
+                                        height: 39,
+                                        width: 110,
+                                        borderRadius: 20,
+                                        top: 10,
+                                        backgroundColor: COLORS.LoginGreen,
+                                        alignSelf: 'center',
+                                        textAlign: 'center',
+                                    }}
+                                >
+                                    <Text
+                                        style={styles.ButtonTextStyle}
+                                    >Refresh</Text>
+                                </TouchableOpacity>
+                            </Card>
+                        </Animatable.View>
+                    }
                 </View>
 
             </Animatable.View>
@@ -297,4 +377,10 @@ const Balance = ({ navigation }) => {
 
 export default Balance
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    ButtonTextStyle: {
+        fontFamily: "Ubuntu-Regular",
+        textAlign: 'center',
+        paddingVertical: 10
+    },
+})

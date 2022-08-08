@@ -27,12 +27,15 @@ const JourneyScreen = ({ route, navigation }) => {
     });
     const [journeyInProgress, setJourneyInProgress] = useState(false);
     const [journeyCompleted, setJourneyCompleted] = useState(false);
-    const [userData, setUserData] = useState({})
+    const [userData, setUserData] = useState({});
+    const [cardNumber, setCardNumber] = useState(-1);
     const [journeyInfo, setJourneyInfo] = useState({
-        source: "",
-        destination: "",
-        cardNumber: "",
-        timeStamp: ""
+        amount: "Rs.100",
+        destStopId: 2,
+        destStopName: "Girl's Hostel Stop",
+        origStopId: 1,
+        origStopName: "Hostel E,F,G",
+        transactionId: "1"
     });
     const [action, setAction] = useState('child_added');
 
@@ -41,8 +44,8 @@ const JourneyScreen = ({ route, navigation }) => {
         docRef.get().then((doc) => {
             if (doc.exists) {
                 console.log("User Information", doc.data());
-
-                setUserData(doc.data())
+                setUserData(doc.data());
+                setCardNumber(doc.data().cardNumber);
             } else {
                 console.log("No such document!");
             }
@@ -51,27 +54,27 @@ const JourneyScreen = ({ route, navigation }) => {
         });
     }, [])
 
-    useEffect(() => {
-        console.log("Incoming params", route.params ?? "Not Incoming")
-        const { flag } = route.params ?? false;
-        setJourneyInProgress(flag ? true : false)
+    // useEffect(() => {
+    //     console.log("Incoming params", route.params ?? "Not Incoming")
+    //     const { flag } = route.params ?? false;
+    //     setJourneyInProgress(flag ? true : false)
 
-    }, [route?.params?.flag])
+    // }, [route?.params?.flag])
 
     useEffect(() => {
         console.log("Running live fetch (Home)");
         const onValueChange = realdb()
-            .ref('/Journey/1941094527')
+            .ref('/Journey/' + cardNumber)
             .on(action, snapshot => {
                 console.log('User data from home screen: ', snapshot.val());
                 setJourney((p) => { return [...p, snapshot.val()] });
             });
         // Stop listening for updates when no longer required
-        return () => realdb().ref(`/Journey/1941094527`).off(action, onValueChange);
+        return () => realdb().ref(`/Journey/` + cardNumber).off(action, onValueChange);
     }, [navigation]);
 
     useEffect(() => {
-        console.log("Set journey invoked (home): ", journey)
+        console.log("Set journey invoked (Journey Screen): ", journey)
         if (journey.length <= 1) {
             setJourneyInProgress(false);
         }
@@ -79,7 +82,7 @@ const JourneyScreen = ({ route, navigation }) => {
             setJourneyInProgress(true);
             setJourneyInfo({
                 ...journeyInfo,
-                source: journey[1]
+                origStopName: journey[1]
             })
         }
         else if (journey.length > 3) {
@@ -87,19 +90,44 @@ const JourneyScreen = ({ route, navigation }) => {
             setJourneyCompleted(true);
             setJourneyInfo({
                 ...journeyInfo,
-                destination: journey[3]
+                destStopName: journey[3]
             })
         }
     }, [journey])
 
     function handleSaveJourney() {
-        // setJourneyInfo({
-        //     ...journeyInfo,
-        // })
+        console.log("Inside Save journey", journeyInfo);
+        var docRef = db().collection("users").doc(auth().currentUser.uid);
+        docRef.update({
+            transactionInfo: db.FieldValue.arrayUnion(journeyInfo)
+        })
+            .then(() => {
+                setJourneyInfo({
+                    amount: "",
+                    destStopId: -1,
+                    destStopName: "",
+                    origStopId: -1,
+                    origStopName: "",
+                    transactionId: ""
+                });
+                setJourney([]);
+                setJourneyCompleted(false);
+                setJourneyInProgress(false);
+                realdb()
+                    .ref('/Journey/' + cardNumber).remove(()=>{
+                        console.log("Live Journey Instace Removed");
+                    }).catch(error=>{console.log("Error Removing live journey instance",error);})
+                    
+                console.log("Journey added successfully");
+            })
+            .catch((error) => {
+                console.log("Journey added failed", error);
+            })
         console.log("Journey Details", journeyInfo);
     }
 
     const mapRef = useRef();
+
     if (journeyInProgress) {
         return (
             <View
@@ -259,7 +287,7 @@ const JourneyScreen = ({ route, navigation }) => {
                                             textAlign: 'center'
                                         }}
                                     >
-                                        {journeyInfo.source}
+                                        {journeyInfo.origStopName}
                                     </Text>
                                 </Card>
                                 <Card
@@ -339,7 +367,7 @@ const JourneyScreen = ({ route, navigation }) => {
                                             textAlign: 'center'
                                         }}
                                     >
-                                        {journeyCompleted ? journeyInfo.destination : "Journey In Progess"}
+                                        {journeyCompleted ? journeyInfo.destStopName : "Journey In Progess"}
                                         {/* Journey in progress */}
                                     </Text>
                                 </Card>
@@ -351,7 +379,7 @@ const JourneyScreen = ({ route, navigation }) => {
                         journeyCompleted === true &&
                         <View>
                             <TouchableOpacity
-                                onPress={handleSaveJourney}
+                                onPress={() => handleSaveJourney()}
                                 style={styles.LoginButtonStyle}
                             >
                                 <Text
@@ -407,16 +435,16 @@ const JourneyScreen = ({ route, navigation }) => {
                         >No Journey in Progress</Text>
                     </View>
                     {/* <View
-                        style={{
-                            flex: 0.5,
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}
-                    >
-                        
-
-
-                    </View> */}
+                            style={{
+                                flex: 0.5,
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}
+                        >
+                            
+    
+    
+                        </View> */}
                     <View
                         style={{
                             flex: 0.5,
@@ -469,7 +497,7 @@ const JourneyScreen = ({ route, navigation }) => {
                                     color: COLORS.black
                                 }}
                             >
-                                Muhammad Usman Karamat
+                                {userData.fullName}
                             </Text>
                         </Card>
 

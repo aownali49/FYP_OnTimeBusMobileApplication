@@ -49,10 +49,9 @@ const Settings = ({ navigation }) => {
       // doc.data().fullName
       if (doc.exists) {
         console.log("User Information", doc.data());
-
         setUserInfo({
           ...userInfo,
-          fullName:doc.data().fullName,
+          fullName:(doc.data().fullName??"Not provided"),
           email:doc.data().email
         })
         
@@ -147,7 +146,6 @@ const Settings = ({ navigation }) => {
                   source={item.icon}
                   resizeMode="cover"
                   style={styles.iconStyle}
-
                 />
                 <Text
                   style={styles.settingsTextStyle}
