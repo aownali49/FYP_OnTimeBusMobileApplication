@@ -103,6 +103,7 @@ const Balance = ({ navigation }) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [errorModal, setErrorModal] = useState(false);
     const [refreshing,setRefreshing] = useState(false);
+    const [userData,setUserData]= useState({});
     //get transaction history
     useEffect(() => {
         setDataLoading(true);
@@ -112,6 +113,7 @@ const Balance = ({ navigation }) => {
             setDataLoading(false);
             if (doc.exists) {
                 console.log("Balance Screen", doc.data());
+                setUserData(doc.data());
                 if (doc.data().transactionInfo) {
                     setTransactionInfo(doc.data().transactionInfo)
                 }
@@ -199,7 +201,7 @@ const Balance = ({ navigation }) => {
                             color: COLORS.black
                         }}
                     >
-                        Rs. 1500
+                        Rs.{userData.amount}
                     </Text>
                     <Text
                         style={{
@@ -212,7 +214,7 @@ const Balance = ({ navigation }) => {
 
                         }}
                     >
-                        4018 **** **** 2266
+                        {userData.cardNumber}
                     </Text>
                     <Text
                         style={{
@@ -224,7 +226,7 @@ const Balance = ({ navigation }) => {
                             color: COLORS.black
                         }}
                     >
-                        Muhammad Usman Karamat
+                        {userData.fullName}
                     </Text>
                 </Card>
             </View>

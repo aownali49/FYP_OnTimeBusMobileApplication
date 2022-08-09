@@ -6,6 +6,8 @@ import { COLORS, FONTS, icons, SIZES, images } from '../constants'
 import { LineDivider, StopCard } from '../components';
 import GOOGLE_MAPS_API from './GoogleMapsAPI';
 import { Card } from 'react-native-shadow-cards'
+import { useIsFocused } from '@react-navigation/native'
+
 var axios = require('axios');
 import { auth, db, realdb, firebase } from '../firebase'
 
@@ -30,14 +32,129 @@ const JourneyScreen = ({ route, navigation }) => {
     const [userData, setUserData] = useState({});
     const [cardNumber, setCardNumber] = useState(-1);
     const [journeyInfo, setJourneyInfo] = useState({
-        amount: "Rs.100",
-        destStopId: 2,
-        destStopName: "Girl's Hostel Stop",
-        origStopId: 1,
-        origStopName: "Hostel E,F,G",
-        transactionId: "1"
+        amount: -1,
+        destStopId: -1,
+        destStopName: "",
+        origStopId: -1,
+        origStopName: "",
+        transactionId: -1
     });
-    const [action, setAction] = useState('child_added');
+    // const [stopsInfo, setStopInfo] = useState([])
+    //Total Stops List
+    const [stopsInfo, setStopInfo] = useState([
+        {
+            stopId: 1,
+            stopName: "Hostel E,F,G",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "2 mins",
+            stopCoordinates: {
+                latitude: 33.659123,
+                longitude: 73.034217,
+            }
+        },
+        {
+            stopId: 2,
+            stopName: "Girl's Hostel Stop",
+            stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
+            distance: "",
+            tta: "15 mins",
+            stopCoordinates: {
+                latitude: 33.657259,
+                longitude: 73.031897,
+            }
+        },
+        {
+            stopId: 3,
+            stopName: "Water Tank Stop",
+            stopAddress: "Imam-Hanifa Rd, H-10, ICT, Pakistan",
+            distance: "",
+            tta: "25 mins",
+            stopCoordinates: {
+                latitude: 33.655689,
+                longitude: 73.023094,
+            }
+
+        },
+        {
+            stopId: 4,
+            stopName: "Zero Point IIUI",
+            stopAddress: "H-10, ICT, Pakistan",
+            distance: "",
+            tta: "25 mins",
+            stopCoordinates: {
+                latitude: 33.657067,
+                longitude: 73.022226,
+            }
+        },
+        {
+            stopId: 5,
+            stopName: "Hostel 5,6 Stop",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "10 mins",
+            stopCoordinates: {
+                latitude: 33.660778,
+                longitude: 73.021422,
+            }
+        },
+        {
+            stopId: 6,
+            stopName: "IIUI Security Camp",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "10 mins",
+            stopCoordinates: {
+                latitude: 33.662285,
+                longitude: 73.019017,
+            }
+        },
+        {
+            stopId: 7,
+            stopName: "FMS Stop",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "10 mins",
+            stopCoordinates: {
+                latitude: 33.663740,
+                longitude: 73.024782,
+            }
+        },
+        {
+            stopId: 8,
+            stopName: "Admin Stop",
+            stopAddress: "H-10, Islamabad, ICT, Pakistan",
+            distance: "",
+            tta: "10 mins",
+            stopCoordinates: {
+                latitude: 33.662854,
+                longitude: 73.031017,
+            }
+        }
+    ])
+
+    function calculateFare(orig, dest) {
+        let stopCount = 0;
+        let amount = 0;
+        console.log("Origin Stop ID", orig);
+        console.log("Destination Stop Id", dest);
+        if (dest > orig) {
+            stopCount = dest - orig;
+        }
+        else if (dest < orig) {
+            for (let index = orig - 1; index < stopsInfo.length; index++) {
+                stopCount++;
+            }
+            for (let index = 0; index < dest - 1; index++) {
+                stopCount++;
+            }
+        }
+        else {
+            stopCount = 0;
+        }
+        amount = stopCount * 30;
+        return amount;
+    }
 
     useEffect(() => {
         var docRef = db().collection("users").doc(auth().currentUser.uid);
@@ -52,27 +169,22 @@ const JourneyScreen = ({ route, navigation }) => {
         }).catch((error) => {
             console.log("Error getting document:", error);
         });
-    }, [])
+    }, [useIsFocused])
 
-    // useEffect(() => {
-    //     console.log("Incoming params", route.params ?? "Not Incoming")
-    //     const { flag } = route.params ?? false;
-    //     setJourneyInProgress(flag ? true : false)
-
-    // }, [route?.params?.flag])
-
+    //Live Journey Updates Listener
     useEffect(() => {
         console.log("Running live fetch (Home)");
         const onValueChange = realdb()
             .ref('/Journey/' + cardNumber)
-            .on(action, snapshot => {
-                console.log('User data from home screen: ', snapshot.val());
+            .on('child_added', snapshot => {
+                // console.log('User data from home screen: ', snapshot.val());
                 setJourney((p) => { return [...p, snapshot.val()] });
             });
         // Stop listening for updates when no longer required
-        return () => realdb().ref(`/Journey/` + cardNumber).off(action, onValueChange);
+        return () => realdb().ref(`/Journey/` + cardNumber).off('child_added', onValueChange);
     }, [navigation]);
 
+    //Journey State Updation onboard
     useEffect(() => {
         console.log("Set journey invoked (Journey Screen): ", journey)
         if (journey.length <= 1) {
@@ -82,19 +194,26 @@ const JourneyScreen = ({ route, navigation }) => {
             setJourneyInProgress(true);
             setJourneyInfo({
                 ...journeyInfo,
-                origStopName: journey[1]
+                origStopId: journey[1],
+                origStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey[1] })].stopName
             })
         }
         else if (journey.length > 3) {
+            setJourneyInfo({
+                ...journeyInfo,
+                destStopId: journey[3],
+                destStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey[3] })].stopName,
+            });
             setJourneyInProgress(true);
             setJourneyCompleted(true);
             setJourneyInfo({
                 ...journeyInfo,
-                destStopName: journey[3]
+                amount: calculateFare(journeyInfo.origStopId, journeyInfo.destStopId)
             })
         }
     }, [journey])
 
+    //Save Journey Information
     function handleSaveJourney() {
         console.log("Inside Save journey", journeyInfo);
         var docRef = db().collection("users").doc(auth().currentUser.uid);
@@ -103,7 +222,7 @@ const JourneyScreen = ({ route, navigation }) => {
         })
             .then(() => {
                 setJourneyInfo({
-                    amount: "",
+                    amount: -1,
                     destStopId: -1,
                     destStopName: "",
                     origStopId: -1,
@@ -114,11 +233,17 @@ const JourneyScreen = ({ route, navigation }) => {
                 setJourneyCompleted(false);
                 setJourneyInProgress(false);
                 realdb()
-                    .ref('/Journey/' + cardNumber).remove(()=>{
+                    .ref('/Journey/' + cardNumber).remove(() => {
                         console.log("Live Journey Instace Removed");
-                    }).catch(error=>{console.log("Error Removing live journey instance",error);})
-                    
+                    }).catch(error => { console.log("Error Removing live journey instance", error); })
                 console.log("Journey added successfully");
+
+                db()
+                    .collection('users')
+                    .doc(auth().currentUser.uid)
+                    .update({
+                        amount: (userData.amount-transactionInfo.amount)
+                    })
             })
             .catch((error) => {
                 console.log("Journey added failed", error);
@@ -334,7 +459,7 @@ const JourneyScreen = ({ route, navigation }) => {
                                                 color: COLORS.gray,
                                                 textAlign: 'center'
                                             }}
-                                        >Total Amount: Rs. 100</Text>
+                                        >Total Amount: Rs. {journeyInfo.amount == -1 ? "Journey in progress" : journeyInfo.amount}</Text>
                                         <Text
                                             style={{
                                                 fontFamily: 'Ubuntu-Bold',
