@@ -274,7 +274,7 @@ const Balance = ({ navigation }) => {
                                     return (
                                         <Pressable
                                             onPress={() => {
-                                                navigation.navigate('TicketScreen', { item })
+                                                navigation.navigate('TicketScreen', { item,userData })
                                             }}
                                         >
                                             <TransactionCard data={item} />

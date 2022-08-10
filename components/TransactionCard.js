@@ -4,7 +4,7 @@ import { COLORS, icons, SIZES } from '../constants'
 import { Card } from 'react-native-shadow-cards';
 
 const TransactionCard = ({ data }) => {
-    console.log("TransactionDetails",data);
+    // console.log("TransactionDetails", data);
     return (
 
         <Card
@@ -72,7 +72,6 @@ const TransactionCard = ({ data }) => {
                         <View
                             style={{
                                 flexDirection: 'row',
-
                             }}
                         >
                             <Text
@@ -82,6 +81,8 @@ const TransactionCard = ({ data }) => {
                                     marginRight: 10,
                                     fontSize: 15,
                                     color: COLORS.black,
+                                    minWidth:85,
+                                    maxWidth:85,
                                     fontFamily: "Ubuntu-Medium",
 
                                 }}
@@ -92,21 +93,43 @@ const TransactionCard = ({ data }) => {
                                     // borderWidth: 1,
                                     fontSize: 10,
                                     color: COLORS.black,
-                                    fontFamily: "Ubuntu-Regular",
+                                    marginLeft:75,
+                                    fontFamily: "Ubuntu-Bold",
                                     textAlignVertical: 'center'
                                 }}
-                            >10:00 10 July 2022</Text>
+                            >{data.boardingTime}</Text>
                         </View>
-
+                        <View
+                            style={{
+                                flexDirection:'row',
+                            }}
+                        
+                        >
                         <Image
                             source={icons.journey}
                             style={{
-                                left: 10,
                                 height: 30,
                                 width: 30,
-                                // tintColor: COLORS.black,
+
                             }}
                         />
+                        <Text
+                            style={{
+                                // position:'absolute',
+                                // top:75,
+                                // left:80,
+                                textAlignVertical:'center',
+                                marginLeft:15,
+                                fontSize: 10,
+                                color: COLORS.black,
+                                fontFamily: "Ubuntu-Bold",
+                            }}
+                        >
+                            {data.date}
+                        </Text>
+
+
+                        </View>
                         <View
                             style={{
                                 flexDirection: 'row'
@@ -115,7 +138,8 @@ const TransactionCard = ({ data }) => {
                             <Text
                                 style={{
                                     // borderColor: COLORS.black,
-                                    // borderWidth: 1,
+                                    minWidth:85,
+                                    maxWidth:85,
                                     marginRight: 10,
                                     fontSize: 15,
                                     color: COLORS.black,
@@ -128,10 +152,12 @@ const TransactionCard = ({ data }) => {
                                     // borderWidth: 1,
                                     fontSize: 10,
                                     color: COLORS.black,
-                                    fontFamily: "Ubuntu-Regular",
+                                    marginLeft:75,
+
+                                    fontFamily: "Ubuntu-Bold",
                                     textAlignVertical: 'center'
                                 }}
-                            >11:00 10 July 2022</Text>
+                            >{data.disembarkingTime}</Text>
                         </View>
                     </View>
                     <View
@@ -158,7 +184,7 @@ const TransactionCard = ({ data }) => {
                                     color: COLORS.white,
                                     fontFamily: "Ubuntu-Bold"
                                 }}
-                            >{data.amount}</Text>
+                            >Rs. {data.amount}</Text>
                         </View>
                     </View>
                 </View>

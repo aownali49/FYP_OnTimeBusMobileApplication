@@ -1,11 +1,16 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import * as Animatable from 'react-native-animatable';
 import { COLORS, images, SIZES, icons } from '../constants'
 
 
 
-const TicketScreen = () => {
+const TicketScreen = ({ route, navigation }) => {
+  const [userData,setUserData]=useState(route.params.userData);
+  const [ticketInfo, setTicketInfo] = useState(route.params.item);
+  console.log("Ticket Details", ticketInfo);
+  console.log("User Details", userData);
+
   return (
     <View
       style={{
@@ -17,15 +22,15 @@ const TicketScreen = () => {
         style={{
           flex: 0.3,
           backgroundColor: '#E4F9F5',
-          justifyContent:'center'
+          justifyContent: 'center'
         }}
       >
         <Image
-        style={{
-          alignSelf:'center',
-          
-        }}
-        source={icons.balance}
+          style={{
+            alignSelf: 'center',
+
+          }}
+          source={icons.balance}
         />
       </View>
       <Animatable.View
@@ -123,7 +128,7 @@ const TicketScreen = () => {
                   marginLeft: 10
                 }}
               >
-                Girls Hostel Stop
+                {ticketInfo.origStopName}
               </Text>
             </View>
           </View>
@@ -173,7 +178,7 @@ const TicketScreen = () => {
                   marginLeft: 10
                 }}
               >
-                Girls Hostel Stop
+                {ticketInfo.destStopName}
               </Text>
             </View>
           </View>
@@ -227,7 +232,7 @@ const TicketScreen = () => {
                   marginLeft: 5
                 }}
               >
-                Muhammad Usman Karamat
+                {userData.fullName}
               </Text>
             </View>
 
@@ -275,7 +280,7 @@ const TicketScreen = () => {
                   marginLeft: 5
                 }}
               >
-                Rs. 150
+                Rs. {ticketInfo.amount}
               </Text>
             </View>
 
@@ -333,7 +338,7 @@ const TicketScreen = () => {
                   marginLeft: 5
                 }}
               >
-                10:25
+                {ticketInfo.boardingTime}
               </Text>
             </View>
 
@@ -381,7 +386,7 @@ const TicketScreen = () => {
                   marginLeft: 5
                 }}
               >
-                10 July 2022
+                {ticketInfo.date}
               </Text>
             </View>
 

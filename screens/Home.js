@@ -194,7 +194,7 @@ const Home = ({ navigation }) => {
         docRef.get().then((doc) => {
 
             if (doc.exists) {
-                console.log("User Information", doc.data());
+                // console.log("User Information", doc.data());
 
                 setUserData(doc.data())
             } else {

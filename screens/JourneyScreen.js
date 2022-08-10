@@ -7,11 +7,13 @@ import { LineDivider, StopCard } from '../components';
 import GOOGLE_MAPS_API from './GoogleMapsAPI';
 import { Card } from 'react-native-shadow-cards'
 import { useIsFocused } from '@react-navigation/native'
+import Moment from 'moment';
 
 var axios = require('axios');
 import { auth, db, realdb, firebase } from '../firebase'
 
 const JourneyScreen = ({ route, navigation }) => {
+    Moment.locale('en');
     const [journey, setJourney] = useState([])
     const [coordinates, setCoordinates] = useState({
         pickupCoords: {
@@ -37,7 +39,9 @@ const JourneyScreen = ({ route, navigation }) => {
         destStopName: "",
         origStopId: -1,
         origStopName: "",
-        transactionId: -1
+        transactionId: -1,
+        boardingTime:"",
+        disembarkingTime:"",
     });
     // const [stopsInfo, setStopInfo] = useState([])
     //Total Stops List
@@ -160,7 +164,7 @@ const JourneyScreen = ({ route, navigation }) => {
         var docRef = db().collection("users").doc(auth().currentUser.uid);
         docRef.get().then((doc) => {
             if (doc.exists) {
-                console.log("User Information", doc.data());
+                // console.log("User Information", doc.data());
                 setUserData(doc.data());
                 setCardNumber(doc.data().cardNumber);
             } else {
@@ -172,11 +176,22 @@ const JourneyScreen = ({ route, navigation }) => {
     }, [useIsFocused])
 
     //Live Journey Updates Listener
+    // useEffect(() => {
+    //     console.log("Running live fetch (Home)");
+    //     const onValueChange = realdb()
+    //         .ref('/Journey/' + cardNumber)
+    //         .on('child_added', (snapshot) => {
+    //             console.log('Live updates: ',snapshot.val());
+    //             setJourney((p) => { return [...p, snapshot.val()]});
+    //         });
+    //     // Stop listening for updates when no longer required
+    //     return () => realdb().ref(`/Journey/` + cardNumber).off('child_added', onValueChange);
+    // }, [navigation]);
+
     useEffect(() => {
         console.log("Running live fetch (Home)");
-        const onValueChange = realdb()
-            .ref('/Journey/' + cardNumber)
-            .on('child_added', snapshot => {
+        const onValueChange = realdb().ref('/Journey/' + cardNumber);
+        onValueChange.on('child_added', snapshot => {
                 // console.log('User data from home screen: ', snapshot.val());
                 setJourney((p) => { return [...p, snapshot.val()] });
             });
@@ -186,7 +201,7 @@ const JourneyScreen = ({ route, navigation }) => {
 
     //Journey State Updation onboard
     useEffect(() => {
-        console.log("Set journey invoked (Journey Screen): ", journey)
+        // console.log("Set journey invoked (Journey Screen): ", journey)
         if (journey.length <= 1) {
             setJourneyInProgress(false);
         }
@@ -194,26 +209,36 @@ const JourneyScreen = ({ route, navigation }) => {
             setJourneyInProgress(true);
             setJourneyInfo({
                 ...journeyInfo,
+                date: Moment(new Date()).format('DD MMM YY'),
+                boardingTime: Moment(new Date()).format('hh:mm'),
                 origStopId: journey[1],
                 origStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey[1] })].stopName
             })
         }
         else if (journey.length > 3) {
-            setJourneyInfo({
-                ...journeyInfo,
-                destStopId: journey[3],
-                destStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey[3] })].stopName,
-            });
             setJourneyInProgress(true);
             setJourneyCompleted(true);
+            // setJourneyInfo({
+            //     ...journeyInfo,
+            //     destStopId: journey[3],
+            //     destStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey[3] })].stopName,
+            //     amount: calculateFare(journey[1],journey[3])
+            // })
             setJourneyInfo({
                 ...journeyInfo,
-                amount: calculateFare(journeyInfo.origStopId, journeyInfo.destStopId)
+                destStopId: 3,
+                disembarkingTime:Moment(new Date()).format('hh:mm'),
+                destStopName: stopsInfo[3].stopName,
+                amount: calculateFare(1,3)
             })
+
+
+            console.log("journey Information",journeyInfo);
+            console.log(" Incoming journey Information",journey);
         }
     }, [journey])
 
-    //Save Journey Information
+    //Save Journey InformationboardingTime
     function handleSaveJourney() {
         console.log("Inside Save journey", journeyInfo);
         var docRef = db().collection("users").doc(auth().currentUser.uid);
@@ -227,7 +252,9 @@ const JourneyScreen = ({ route, navigation }) => {
                     destStopName: "",
                     origStopId: -1,
                     origStopName: "",
-                    transactionId: ""
+                    transactionId: "",
+                    boardingTime:"",
+                    disembarkingTime:""
                 });
                 setJourney([]);
                 setJourneyCompleted(false);
@@ -236,13 +263,11 @@ const JourneyScreen = ({ route, navigation }) => {
                     .ref('/Journey/' + cardNumber).remove(() => {
                         console.log("Live Journey Instace Removed");
                     }).catch(error => { console.log("Error Removing live journey instance", error); })
-                console.log("Journey added successfully");
-
                 db()
                     .collection('users')
                     .doc(auth().currentUser.uid)
                     .update({
-                        amount: (userData.amount-transactionInfo.amount)
+                        amount: (userData.amount - journeyInfo.amount)
                     })
             })
             .catch((error) => {
@@ -468,7 +493,7 @@ const JourneyScreen = ({ route, navigation }) => {
                                                 color: COLORS.gray,
                                                 textAlign: 'center'
                                             }}
-                                        >Boarding Time: 25 min</Text>
+                                        >Boarding Time:{journeyInfo.boardingTime}</Text>
 
                                     </View>
                                 </Card>
