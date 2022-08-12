@@ -34,6 +34,8 @@ const noJourney = require("../assets/icons/noJourney.png");
 const pinpoint2 = require("../assets/icons/pin-point.png");
 const exclamation = require("../assets/icons/exclamation.png");
 const busStick = require("../assets/icons/busStick.png");
+const logout = require("../assets/icons/logout.png");
+
 
 export default {
     bus,
@@ -71,5 +73,6 @@ export default {
     noJourney,
     pinpoint2,
     exclamation,
-    busStick
+    busStick,
+    logout
 }

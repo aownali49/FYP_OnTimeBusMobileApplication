@@ -30,9 +30,9 @@ const Settings = ({ navigation }) => {
       icon: icons.balance
     },
     {
-      settingName: "About",
+      settingName: "Logout",
       targetAddress: "",
-      icon: icons.about
+      icon: icons.logout
     },
 
   ])
@@ -131,21 +131,25 @@ const Settings = ({ navigation }) => {
                   }}
                 >{userInfo.email}</Text>
               </View>
-
             </Card>
-
           )
         }}
         renderItem={({ item }) => {
           return (
-            <Pressable onPress={() => { navigation.navigate(item.targetAddress) }}>
+            <Pressable onPress={() => { item.settingName !== "Logout"? navigation.navigate(item.targetAddress)
+            :auth()
+            .signOut()
+            .then(()=>{
+              navigation.replace('AuthenticationStack')
+            })
+            }}>
               <Card
                 style={styles.cardStyle}
               >
                 <Image
                   source={item.icon}
                   resizeMode="cover"
-                  style={styles.iconStyle}
+                  style={[styles.iconStyle]}
                 />
                 <Text
                   style={styles.settingsTextStyle}

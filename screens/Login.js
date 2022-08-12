@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { dummy, COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Card } from 'react-native-shadow-cards';
 import * as Animatable from 'react-native-animatable'
@@ -9,11 +9,11 @@ import { auth } from '../firebase';
 const Login = ({ navigation }) => {
 
   const [userCredentials, setUserCredentials] = useState("");
+  const [initializing, setInitializing] = useState(true);
+  
   const [errorMessage, setErrorMessage] = useState("");
   const [passwordValidator, setPasswordValidator] = useState(false);
   const [emailValidator, setEmailValidator] = useState(false);
-
-
   const [errorModal, setErrorModal] = useState(false);
   const [data, setData] = useState({
     username: '',
@@ -24,7 +24,18 @@ const Login = ({ navigation }) => {
     isValidPassword: true,
   });
 
+  function onAuthStateChanged(user)
+  {
+    setUserCredentials(user);
+    if(initializing) setInitializing(false);
+    if(user!=null) 
+    navigation.replace('HomeStack')
+  }
 
+  useEffect(()=>{
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  },[])
 
   const handleSignIn = () => {
     auth()
