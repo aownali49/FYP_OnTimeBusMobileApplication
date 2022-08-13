@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Button, Animated, Image, TouchableOpacity, TextInput, FlatList, Modal, Pressable, ActivityIndicator } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
-import MapView, { Marker, Polyline } from 'react-native-maps'
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE, AnimatedRegion } from 'react-native-maps'
 import { COLORS, FONTS, icons, SIZES } from '../constants'
 import SlidingUpPanel from 'rn-sliding-up-panel';
 import { LineDivider, Thumb, StopCard, NearbyStopsComponent } from '../components';
@@ -21,6 +21,12 @@ const Home = ({ navigation }) => {
         cardNumber: "",
         timeStamp: ""
     });
+    const [busLocation, setBusLocation] = useState({
+        
+        latitude: 33.504013,
+        longitude: 73.102201,
+    });
+
     const [action, setAction] = useState('child_added');
     const [dataLoading, setDataLoading] = useState(true);
     const [sourceInput, setSource] = useState("");
@@ -167,6 +173,7 @@ const Home = ({ navigation }) => {
             _draggedValue.removeAllListeners();
         }
     }, []);
+
     //Stops info
     useEffect(() => {
         try {
@@ -179,8 +186,8 @@ const Home = ({ navigation }) => {
                         stops.push(doc.data())
                     });
                     setStopInfo(stops)
-                    stopsInfo.map(stop=>{
-                        console.log("Stop:",stop.stopCoordinates);
+                    stopsInfo.map(stop => {
+                        console.log("Stop:", stop.stopCoordinates);
                     })
                 });
         } catch (error) {
@@ -224,6 +231,27 @@ const Home = ({ navigation }) => {
 
     // }, [journey])
 
+    useEffect(() => {
+        console.log("Enter ...");
+        const onChildChanged = realdb()
+            .ref('/GPS')
+            .on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    console.log("data available");
+                    console.log(snapshot.val());
+
+                    setBusLocation({
+                        longitude:snapshot.val().longitude,
+                        latitude: snapshot.val().latitude
+                    })
+                } else {
+                    console.log("No data available");
+                }
+            });
+
+        // return realdb().ref('/GPS').off('child_changed', onChildChanged);
+    }, [])
+
 
 
     function buildRoute(oSrc, oDest) {
@@ -253,7 +281,7 @@ const Home = ({ navigation }) => {
                 for (let index = 0; index <= destIndex; index++) {
                     routeList.push(stopsInfo[index]);
                 }
-                console.log("Route List:", routeList);
+                // console.log("Route List:", routeList);
                 setRouteStops(routeList);
                 setSearchResult([routeList]);
             }
@@ -325,6 +353,7 @@ const Home = ({ navigation }) => {
                 <MapView
                     ref={_mapRef}
                     style={{ flex: 1 }}
+                    provider={PROVIDER_GOOGLE}
                     initialRegion={{
                         latitude: 33.504013,
                         longitude: 73.102201,
@@ -332,20 +361,43 @@ const Home = ({ navigation }) => {
                         longitudeDelta: 0.0421,
                     }}
                 >
+                    <Marker
+                        key={`busLocation${99}`}
+                        title={""}
+                        description={""}
+                        coordinate={busLocation}
+                        style={{
+                            zIndex:4
+                        }}
+                    >
+                        <Image
+                            source={icons.shuttle}
+                            resizeMode='cover'
+                            style={{
+                                width: 40,
+                                height: 40
+                            }}
+                        />
+                    </Marker>
 
                     {
-                        stopsInfo.map(item => {
+                        stopsInfo.map((item, index) => {
                             return (
                                 <Marker
+                                    key={index}
                                     title={item.stopName}
                                     description={item.stopAddress}
                                     coordinate={item.stopCoordinates}
-                                    image={icons.busStop}
-                                    style={{
-                                        height: 25,
-                                        width: 25
-                                    }}
-                                />
+                                >
+                                    <Image
+                                        source={icons.busStop}
+                                        resizeMode='cover'
+                                        style={{
+                                            width: 40,
+                                            height: 40
+                                        }}
+                                    />
+                                </Marker>
                             )
                         })
                     }
@@ -683,7 +735,7 @@ const Home = ({ navigation }) => {
                             url: 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=' + orig.coordinates.latitude + '%2C' + orig.coordinates.longitude + '&destinations=' + stop.stopCoordinates.latitude + '%2C' + stop.stopCoordinates.longitude + '&key=' + GOOGLE_MAPS_API,
                             headers: {}
                         };
-                        console.log("URL=>", config.url);
+                        // console.log("URL=>", config.url);
 
                         axios(config)
                             .then(function (response) {
@@ -710,7 +762,7 @@ const Home = ({ navigation }) => {
                 .then(function (response) {
                     destinaton.coordinates.latitude = response.data.results[0].geometry.location.lat;
                     destinaton.coordinates.longitude = response.data.results[0].geometry.location.lng;
-                    // console.log("Destination Coordinates gotten:", destinaton.coordinates);
+                    console.log("Destination Coordinates gotten:", destinaton.coordinates);
                     stopsInfo.forEach(stop => {
                         let dest = stop.stopAddress.replace(/,/g, '');
                         dest = dest.replace(/ /g, '&');
@@ -731,6 +783,7 @@ const Home = ({ navigation }) => {
                                 // setSearchResult(destinationList.sort(function (a, b) { return a.distance - b.distance }));
                                 // console.warn("Destination List==>", JSON.stringify(destinationList), '\n');
                                 destinationList = destinationList.sort(function (a, b) { return a.distance - b.distance });
+                                //    destinationList.forEach((item)=>{console.log("Stop Distance to Destination",item.distance);})
                             })
                             .catch(function (error) {
                                 console.log(error);
@@ -741,8 +794,8 @@ const Home = ({ navigation }) => {
                     console.log(error);
                 })
             setTimeout(() => {
-                // console.log("Source list is", sourceList[0].stopName);
-                // console.log("Destination list is", destinationList[0].stopName);
+                sourceList.forEach((source) => { console.log("Source Name:", source.stopName, " Distance:", source.distance); })
+                destinationList.forEach((Destination) => { console.log("Destination Name:", Destination.stopName, " Distance:", Destination.distance); })
                 buildRoute(sourceList[0], destinationList[0]);
             }, 4000)
         }
