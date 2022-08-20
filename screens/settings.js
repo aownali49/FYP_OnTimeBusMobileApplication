@@ -15,13 +15,13 @@ const Settings = ({ navigation }) => {
       icon: icons.accSettings
     },
     {
-      settingName: "Notifications",
-      targetAddress: "",
+      settingName: "Card Settings",
+      targetAddress: 'NewCard',
       icon: icons.notification
     },
     {
       settingName: "Help",
-      targetAddress: "",
+      targetAddress: "HelpScreen",
       icon: icons.help
     },
     {

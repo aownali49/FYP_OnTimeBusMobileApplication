@@ -114,7 +114,7 @@ const Balance = ({ navigation }) => {
             if (doc.exists) {
                 console.log("Balance Screen", doc.data());
                 setUserData(doc.data());
-                if (doc.data().transactionInfo) {
+                if (doc.data().transactionInfo.length!==0) {
                     setTransactionInfo(doc.data().transactionInfo)
                 }
                 else {

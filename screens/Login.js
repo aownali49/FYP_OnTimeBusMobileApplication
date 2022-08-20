@@ -29,7 +29,7 @@ const Login = ({ navigation }) => {
     setUserCredentials(user);
     if(initializing) setInitializing(false);
     if(user!=null) 
-    navigation.replace('HomeStack')
+    navigation.replace('HomeStack');
   }
 
   useEffect(()=>{
@@ -212,7 +212,7 @@ const Login = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate('Signup')}
+            onPress={() => navigation.replace('Signup')}
             style={styles.RegisterButton}
           >
             <Text

@@ -27,6 +27,7 @@ const ScanCardRegisterScreen = ({ navigation }) => {
             console.log("Tag ID:", numArray);
             setCardNumber(numArray);
         } catch (ex) {
+            setCardNumber(null);
             console.warn('Oops!', ex);
         } finally {
             // stop the nfc scanning
@@ -82,7 +83,7 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                             fontFamily: "Ubuntu-Regular"
                         }}
                     >
-                        Create your account:
+                        Scan your QuickBus Card:
                     </Text>
                     <Card
                         style={{
@@ -132,14 +133,14 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                     <TouchableOpacity
                         onPress={() => {
                             try {
-                                if (cardNumber.length !== 0) {
+                                if (cardNumber!==null) {
                                     db()
                                         .collection('users')
                                         .doc(auth().currentUser.uid)
                                         .update({
                                             'cardNumber': cardNumber
                                         })
-                                    navigation.navigate('HomeStack')
+                                    navigation.replace('HomeStack')
                                 }
                                 else
                                 {
@@ -332,7 +333,7 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                                     marginTop: 20
                                 }}
                             >
-                                Login Error
+                                Card Error
                             </Text>
                             <Image
                                 style={{
@@ -360,12 +361,6 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                                 onPress={() => {
                                     setErrorModal(false);
                                     setErrorMessage("");
-                                    setEmailValidator(true);
-                                    setPasswordValidator(true);
-                                    setData({
-                                        username: "",
-                                        password: ""
-                                    })
                                 }}
                                 style={{
                                     height: 39,

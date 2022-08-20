@@ -11,6 +11,17 @@ import { auth, db, realdb, firebase } from '../firebase'
 
 import MapViewDirections from 'react-native-maps-directions';
 import { Card } from 'react-native-shadow-cards';
+import { Dimensions } from "react-native";
+
+
+
+
+const screen = Dimensions.get('window');
+const ASPECT_RATIO = screen.width / screen.height;
+const LATITUDE_DELTA = 0.04;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
+
 const Home = ({ navigation }) => {
     let _panel = useRef(null);
     const [userData, setUserData] = useState({})
@@ -22,7 +33,7 @@ const Home = ({ navigation }) => {
         timeStamp: ""
     });
     const [busLocation, setBusLocation] = useState({
-        
+
         latitude: 33.504013,
         longitude: 73.102201,
     });
@@ -40,6 +51,28 @@ const Home = ({ navigation }) => {
     const [searching, setSearching] = useState(false);
     // const [sourceAddress, setSourceAddress] = useState("");
     const _mapRef = useRef(null);
+    const markerRef = useRef()
+    const [state, setState] = useState({
+        curLoc: {
+            latitude: 30.7046,
+            longitude: 77.1025,
+        },
+        destinationCords: {},
+        isLoading: false,
+        coordinate: new AnimatedRegion({
+            latitude:  33.659123,
+            longitude: 73.034217,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA
+        }),
+        time: 0,
+        distance: 0,
+        heading: 0
+
+    })
+
+    const { curLoc, time, distance, destinationCords, isLoading, coordinate, heading } = state
+    const updateState = (data) => setState((state) => ({ ...state, ...data }));
 
     //Total Stops List
     // const [stopsInfo, setStopInfo] = useState([
@@ -239,11 +272,22 @@ const Home = ({ navigation }) => {
                 if (snapshot.exists()) {
                     console.log("data available");
                     console.log(snapshot.val());
-
-                    setBusLocation({
-                        longitude:snapshot.val().longitude,
-                        latitude: snapshot.val().latitude
+                    const { latitude, longitude } = snapshot.val()
+                    animate(latitude, longitude);
+                    updateState({
+                        heading: 0,
+                        curLoc: { latitude, longitude },
+                        coordinate: new AnimatedRegion({
+                            latitude: latitude,
+                            longitude: longitude,
+                            latitudeDelta: LATITUDE_DELTA,
+                            longitudeDelta: LONGITUDE_DELTA
+                        })
                     })
+                    // setBusLocation({
+                    //     longitude: snapshot.val().longitude,
+                    //     latitude: snapshot.val().latitude
+                    // })
                 } else {
                     console.log("No data available");
                 }
@@ -252,6 +296,17 @@ const Home = ({ navigation }) => {
         // return realdb().ref('/GPS').off('child_changed', onChildChanged);
     }, [])
 
+
+    const animate = (latitude, longitude) => {
+        const newCoordinate = { latitude, longitude };
+        if (Platform.OS == 'android') {
+            if (markerRef.current) {
+                markerRef.current.animateMarkerToCoordinate(newCoordinate, 7000);
+            }
+        } else {
+            coordinate.timing(newCoordinate).start();
+        }
+    }
 
 
     function buildRoute(oSrc, oDest) {
@@ -361,13 +416,13 @@ const Home = ({ navigation }) => {
                         longitudeDelta: 0.0421,
                     }}
                 >
-                    <Marker
+                    {/* <Marker
                         key={`busLocation${99}`}
                         title={""}
                         description={""}
                         coordinate={busLocation}
                         style={{
-                            zIndex:4
+                            zIndex: 4
                         }}
                     >
                         <Image
@@ -378,7 +433,21 @@ const Home = ({ navigation }) => {
                                 height: 40
                             }}
                         />
-                    </Marker>
+                    </Marker> */}
+                    <Marker.Animated
+                        ref={markerRef}
+                        coordinate={coordinate}
+                    >
+                        <Image
+                            source={icons.shuttle}
+                            style={{
+                                width: 40,
+                                height: 40,
+                                transform: [{rotate: `${heading}deg`}]
+                            }}
+                            resizeMode="contain"
+                        />
+                    </Marker.Animated>
 
                     {
                         stopsInfo.map((item, index) => {

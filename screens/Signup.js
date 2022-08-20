@@ -40,7 +40,7 @@ const Signup = ({ navigation }) => {
                     confirm_secureTextEntry: true
                 })
                 // navigation.replace('tabs')
-                navigation.replace('ScanCard')
+                navigation.replace('ScanCard');
             })
             .catch(error => {
                 console.log(error)
@@ -60,7 +60,9 @@ const Signup = ({ navigation }) => {
     const addUser = (user) => {
         console.log("New user being created",user);
         const userData = {
-            'email': user.email
+            'email': user.email,
+            'amount':0,
+            'transactionInfo':[]
         }
         const userID = user.uid
         db().collection('users').doc(userID).set(userData)

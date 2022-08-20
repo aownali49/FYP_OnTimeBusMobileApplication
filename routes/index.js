@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from 'react'
 import { NavigationContainer } from "@react-navigation/native";
-import { HomeScreen, SettingScreen, ProfileSettingScreen,ProfileScreen, Home, Login, Signup,Splash,Balance,ScanCardRegisterScreen, JourneyScreen,TicketScreen } from "../screens";
+import { HomeScreen, SettingScreen, ProfileSettingScreen,ProfileScreen, Home, Login, Signup,Splash,Balance,ScanCardRegisterScreen, JourneyScreen,TicketScreen,HelpScreen } from "../screens";
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { COLORS, FONTS, icons } from "../constants/index"
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -94,9 +94,11 @@ const SettingsStackShow =()=>{
             <SettingsStack.Screen  name="Settings" component={SettingScreen}></SettingsStack.Screen>
             <SettingsStack.Screen  name="Profile" component={ProfileSettingScreen}></SettingsStack.Screen>
             <SettingsStack.Screen  name="Balance" component={Balance}></SettingsStack.Screen>
-            <SettingsStack.Screen  name="Balance4" component={Balance}></SettingsStack.Screen>
+            <SettingsStack.Screen  name="NewCard" component={ScanCardRegisterScreen}></SettingsStack.Screen>
             <SettingsStack.Screen  name="Journey" component={JourneyScreen}></SettingsStack.Screen>
             <SettingsStack.Screen  name="TicketScreen" component={TicketScreen}></SettingsStack.Screen>
+            <SettingsStack.Screen  name="HelpScreen" component={HelpScreen}></SettingsStack.Screen>
+
         </SettingsStack.Navigator>
     )
 }
@@ -107,7 +109,7 @@ const AuthStackShow = () => {
             <AuthStack.Screen name="Splash" component={Splash} />
             <AuthStack.Screen name="Login" component={Login} />
             <AuthStack.Screen name="Signup" component={Signup} />
-            <AuthStack.Screen name="ScanCard" component={ScanCardRegisterScreen}/>
+            <AuthStack.Screen name="ScanCard" component={ScanCardRegisterScreen} />
         </AuthStack.Navigator>
     )
 }

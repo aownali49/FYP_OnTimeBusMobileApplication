@@ -14,6 +14,7 @@ import { auth, db, realdb, firebase } from '../firebase'
 
 const JourneyScreen = ({ route, navigation }) => {
     Moment.locale('en');
+    const isFocused = useIsFocused()
     const [journey, setJourney] = useState([])
     const [coordinates, setCoordinates] = useState({
         pickupCoords: {
@@ -32,7 +33,7 @@ const JourneyScreen = ({ route, navigation }) => {
     const [journeyInProgress, setJourneyInProgress] = useState(false);
     const [journeyCompleted, setJourneyCompleted] = useState(false);
     const [userData, setUserData] = useState({});
-    const [cardNumber, setCardNumber] = useState(-1);
+    const [cardNumber, setCardNumber] = useState("-1");
     const [journeyInfo, setJourneyInfo] = useState({
         amount: -1,
         destStopId: -1,
@@ -40,8 +41,8 @@ const JourneyScreen = ({ route, navigation }) => {
         origStopId: -1,
         origStopName: "",
         transactionId: -1,
-        boardingTime:"",
-        disembarkingTime:"",
+        boardingTime: "",
+        disembarkingTime: "",
     });
     // const [stopsInfo, setStopInfo] = useState([])
     //Total Stops List
@@ -166,7 +167,7 @@ const JourneyScreen = ({ route, navigation }) => {
             if (doc.exists) {
                 // console.log("User Information", doc.data());
                 setUserData(doc.data());
-                setCardNumber(doc.data().cardNumber);
+                setCardNumber(doc.data().cardNumber ?? "");
             } else {
                 console.log("No such document!");
             }
@@ -175,70 +176,133 @@ const JourneyScreen = ({ route, navigation }) => {
         });
     }, [useIsFocused])
 
-    //Live Journey Updates Listener
-    // useEffect(() => {
-    //     console.log("Running live fetch (Home)");
-    //     const onValueChange = realdb()
-    //         .ref('/Journey/' + cardNumber)
-    //         .on('child_added', (snapshot) => {
-    //             console.log('Live updates: ',snapshot.val());
-    //             setJourney((p) => { return [...p, snapshot.val()]});
-    //         });
-    //     // Stop listening for updates when no longer required
-    //     return () => realdb().ref(`/Journey/` + cardNumber).off('child_added', onValueChange);
-    // }, [navigation]);
-
+    // Live Journey Updates Listener
     useEffect(() => {
-        console.log("Running live fetch (Home)");
-        const onValueChange = realdb().ref('/Journey/' + cardNumber);
-        onValueChange.on('child_added', snapshot => {
-                // console.log('User data from home screen: ', snapshot.val());
-                setJourney((p) => { return [...p, snapshot.val()] });
+        console.log("Running live fetch (Journey)");
+        const onValueChange = realdb()
+            .ref("1941094527")
+            .on('child_added', (snapshot) => {
+                console.log(snapshot.key,":",snapshot.val());
+                setJourney((p) => { return {...p, [snapshot.key]:snapshot.val()} })
             });
         // Stop listening for updates when no longer required
-        return () => realdb().ref(`/Journey/` + cardNumber).off('child_added', onValueChange);
-    }, [navigation]);
+        return () => realdb().ref("1941094527").off('child_added', onValueChange);
+    }, [isFocused]);
 
-    //Journey State Updation onboard
-    useEffect(() => {
-        // console.log("Set journey invoked (Journey Screen): ", journey)
-        if (journey.length <= 1) {
-            setJourneyInProgress(false);
-        }
-        else if (journey.length === 3) {
+    useEffect(()=>{
+        console.log("Journey is invoked",journey);
+        if(journey["Source"])
+        {
+            console.log("Journey exists");
             setJourneyInProgress(true);
             setJourneyInfo({
                 ...journeyInfo,
                 date: Moment(new Date()).format('DD MMM YY'),
                 boardingTime: Moment(new Date()).format('hh:mm'),
-                origStopId: journey[1],
-                origStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey[1] })].stopName
+                origStopId: journey["Source"],
+                origStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey["Source"] })].stopName
             })
         }
-        else if (journey.length > 3) {
-            setJourneyInProgress(true);
+        if (journey["Destination"]) 
+        {
+            console.log("Journey is completed"); 
             setJourneyCompleted(true);
-            // setJourneyInfo({
-            //     ...journeyInfo,
-            //     destStopId: journey[3],
-            //     destStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey[3] })].stopName,
-            //     amount: calculateFare(journey[1],journey[3])
-            // })
             setJourneyInfo({
                 ...journeyInfo,
-                destStopId: 3,
-                disembarkingTime:Moment(new Date()).format('hh:mm'),
-                destStopName: stopsInfo[3].stopName,
-                amount: calculateFare(1,3)
+                date: Moment(new Date()).format('DD MMM YY'),
+                boardingTime: Moment(new Date()).format('hh:mm'),
+                destStopId: journey["Destination"],
+                destStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey["Destination"] })].stopName,
+                amount: calculateFare(journey["Source"],journey["Destination"])
             })
-
-
-            console.log("journey Information",journeyInfo);
-            console.log(" Incoming journey Information",journey);
         }
-    }, [journey])
+    },[journey])
+
+    // useEffect(() => {
+    // console.log("Running live fetch (Home)");
+    // const onValueChange = realdb().ref('/Journey/' + cardNumber);
+    // onValueChange.on('child_added', snapshot => {
+    //     console.log('Journey Event: ', snapshot.val());
+    //     setJourney((p) => { return [...p, snapshot.val()] });
+    // });
+    // Stop listening for updates when no longer required
+    // return () => realdb().ref(`/Journey/` + cardNumber).off('child_added', onValueChange);
+    // }, []);
+
+    // useEffect(() => {
+    //     turnOnLiveUpdates();
+    // }, [isFocused])
+
+    // function turnOnLiveUpdates() {
+    //     console.log("Running live fetch (Journey)");
+    //     const onValueChange = realdb()
+    //         .ref('/Journey/' + cardNumber)
+    //         .once('value')
+    //         .then((snapshot) => {
+    //             console.log('Live updates: ', snapshot.val());
+    //             setJourney((p) => { return [...p, snapshot.val()] });
+    //         });
+
+    //     // Stop listening for updates when no longer required
+    //     // return () => realdb().ref('/Journey/' + cardNumber).off('child_added', onValueChange);
+    // }
+
+
+    //If Value is to be changed using refresh approach
+    // useEffect(() => {
+    //     console.log("Starting");
+    //     const onValueChange = realdb()
+    //         .ref('1941094527')
+    //         .once('value')
+    //         .then((snapshot) => {
+    //             console.log('Live updates: ', snapshot.val());
+    //             // setJourney((p) => { return [...p, snapshot.val()] });
+    //         });
+    // }, [isFocused])
+
+
+
+    //Journey State Updation onboard
+    // useEffect(() => {
+    //     console.log("Set journey invoked (Journey Screen): ", journey)
+    //     if (journey.length <= 1) {
+    //         setJourneyInProgress(false);
+    //     }
+    //     else if (journey.length === 3) {
+    //         setJourneyInProgress(true);
+    //         setJourneyInfo({
+    //             ...journeyInfo,
+    //             date: Moment(new Date()).format('DD MMM YY'),
+    //             boardingTime: Moment(new Date()).format('hh:mm'),
+    //             origStopId: journey[1],
+    //             origStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey[1] })].stopName
+    //         })
+    //     }
+    //     else if (journey.length > 3) {
+    //         setJourneyInProgress(true);
+    //         setJourneyCompleted(true);
+    //         // setJourneyInfo({
+    //         //     ...journeyInfo,
+    //         //     destStopId: journey[3],
+    //         //     destStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey[3] })].stopName,
+    //         //     amount: calculateFare(journey[1],journey[3])
+    //         // })
+    //         setJourneyInfo({
+    //             ...journeyInfo,
+    //             destStopId: 3,
+    //             disembarkingTime: Moment(new Date()).format('hh:mm'),
+    //             destStopName: stopsInfo[3].stopName,
+    //             amount: calculateFare(1, 3)
+    //         })
+
+
+    //         console.log("journey Information", journeyInfo);
+    //         console.log(" Incoming journey Information", journey);
+    //     }
+    // }, [journey])
 
     //Save Journey InformationboardingTime
+    
     function handleSaveJourney() {
         console.log("Inside Save journey", journeyInfo);
         var docRef = db().collection("users").doc(auth().currentUser.uid);
@@ -253,14 +317,14 @@ const JourneyScreen = ({ route, navigation }) => {
                     origStopId: -1,
                     origStopName: "",
                     transactionId: "",
-                    boardingTime:"",
-                    disembarkingTime:""
+                    boardingTime: "",
+                    disembarkingTime: ""
                 });
-                setJourney([]);
+                setJourney({});
                 setJourneyCompleted(false);
                 setJourneyInProgress(false);
                 realdb()
-                    .ref('/Journey/' + cardNumber).remove(() => {
+                    .ref('1941094527').remove(() => {
                         console.log("Live Journey Instace Removed");
                     }).catch(error => { console.log("Error Removing live journey instance", error); })
                 db()
