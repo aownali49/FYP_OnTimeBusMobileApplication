@@ -19,42 +19,39 @@ const SearchResultCard = ({handlePress}) => {
                 backgroundColor: COLORS.white,
                 borderRadius: SIZES.radius,
                 flexDirection: 'row',
-
-
             }}
         >
             <View
-
+                style={{
+                    flex:0.3
+                }}
             >
                 <Text
                     style={{ color: COLORS.black }}
-                >Departure in:</Text>
-                <Text style={{ color: COLORS.black }}>08 <Text>min</Text></Text>
+                >Route information:</Text>
             </View>
             <View
                 style={{
-                    flex: 1,
+                    flex: 0.7,
                     paddingHorizontal: SIZES.radius,
                     borderColor: COLORS.black,
-                    borderWidth: 1
+                    // borderWidth: 1
                 }}
-
             >
                 <View
                     style={{
                         justifyContent: 'space-between',
                         flexDirection: 'row',
-                        borderColor: COLORS.black,
-                        borderWidth: 1
-
                     }}
                 >
-                    <Text style={{ color: COLORS.black }}>Travel time: <Text>50 min</Text></Text>
-                    <Text style={{ color: COLORS.black }}>18:45</Text>
+                    <Text style={{ left:50,color: COLORS.black }}>Click to view route</Text>
+                    {/* <Text style={{ color: COLORS.black }}></Text> */}
                 </View>
                 <View
                     style={{
                         flex: 1,
+                        borderColor: COLORS.black,
+                        // borderWidth: 1,
                         paddingHorizontal: SIZES.radius,
                         flexDirection: "row",
                         justifyContent: 'center',
@@ -64,7 +61,6 @@ const SearchResultCard = ({handlePress}) => {
                         style={{
                             flexDirection: 'row',
                             alignItems: 'flex-end',
-
                         }}
                     >
                         <Image
@@ -95,15 +91,6 @@ const SearchResultCard = ({handlePress}) => {
                             }}
 
                         >
-                            <Text
-                                style={{
-
-                                    color: COLORS.black,
-
-                                }}
-                            >
-                                18:00
-                            </Text>
                             <View
                                 style={{
 
@@ -167,31 +154,14 @@ const SearchResultCard = ({handlePress}) => {
                         />
                         <View
                             style={{
-
-
                                 justifyContent: 'flex-end'
-
                             }}
-
                         >
-                            <Text
-                                style={{
-
-                                    color: COLORS.black,
-
-                                }}
-                            >
-                                18:00
-                            </Text>
                             <View
                                 style={{
-
                                     flexDirection: 'row',
                                     alignItems: 'center',
-
-
                                 }}
-
                             >
                                 <Image
                                     style={{

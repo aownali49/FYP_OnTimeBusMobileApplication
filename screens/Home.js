@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, Animated, Image, TouchableOpacity, TextInput, FlatList, Modal, Pressable, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, Button, Animated, Image, TouchableOpacity, TextInput, FlatList, Modal, Pressable, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE, AnimatedRegion } from 'react-native-maps'
 import { COLORS, FONTS, icons, SIZES } from '../constants'
@@ -12,9 +12,6 @@ import { auth, db, realdb, firebase } from '../firebase'
 import MapViewDirections from 'react-native-maps-directions';
 import { Card } from 'react-native-shadow-cards';
 import { Dimensions } from "react-native";
-
-
-
 
 const screen = Dimensions.get('window');
 const ASPECT_RATIO = screen.width / screen.height;
@@ -60,7 +57,7 @@ const Home = ({ navigation }) => {
         destinationCords: {},
         isLoading: false,
         coordinate: new AnimatedRegion({
-            latitude:  33.659123,
+            latitude: 33.659123,
             longitude: 73.034217,
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA
@@ -172,30 +169,7 @@ const Home = ({ navigation }) => {
     const [searchResult, setSearchResult] = useState([]);
 
     //Stops in the Route
-    const [routeStops, setRouteStops] = useState([
-        {
-            stopId: "1",
-            stopName: "IIUI Iqra College",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "2 mins",
-            stopCoordinates: {
-                latitude: 33.659757,
-                longitude: 73.038013,
-            }
-        },
-        {
-            stopId: "2",
-            stopName: "Girls Hostel E,F,G Block",
-            stopAddress: "H-10, Islamabad, ICT, Pakistan",
-            distance: "",
-            tta: "10 mins",
-            stopCoordinates: {
-                latitude: 33.659123,
-                longitude: 73.034217,
-            }
-        }
-    ]);
+    const [routeStops, setRouteStops] = useState([]);
 
     //Re-Renders when Modal Changes
     useEffect(() => {
@@ -226,6 +200,7 @@ const Home = ({ navigation }) => {
         } catch (error) {
             setDataLoading(false);
         }
+
     }, [])
 
     //USer Info
@@ -296,7 +271,6 @@ const Home = ({ navigation }) => {
         // return realdb().ref('/GPS').off('child_changed', onChildChanged);
     }, [])
 
-
     const animate = (latitude, longitude) => {
         const newCoordinate = { latitude, longitude };
         if (Platform.OS == 'android') {
@@ -308,9 +282,10 @@ const Home = ({ navigation }) => {
         }
     }
 
-
     function buildRoute(oSrc, oDest) {
+        setRouteStops([]);
         var routeList = [];
+        stopsInfo.sort((a, b) => { return a.stopId - b.stopId });
         if (oSrc && oDest) {
             let srcIndex = stopsInfo.findIndex((object) => {
                 return object.stopId === oSrc.stopId;
@@ -322,10 +297,11 @@ const Home = ({ navigation }) => {
             console.log("Destination Index is ", destIndex);
             setSearching(false);
             if (srcIndex < destIndex) {
-                for (let index = 0; index <= destIndex; index++) {
+                for (let index = srcIndex; index <= destIndex; index++) {
                     routeList.push(stopsInfo[index]);
                     // console.warn(stopsInfo[index].stopName);
                 }
+                routeList.forEach((item) => { console.log("Route Stop", item); })
                 setRouteStops(routeList);
                 setSearchResult([routeList]);
             }
@@ -336,7 +312,7 @@ const Home = ({ navigation }) => {
                 for (let index = 0; index <= destIndex; index++) {
                     routeList.push(stopsInfo[index]);
                 }
-                // console.log("Route List:", routeList);
+                routeList.forEach((item) => { console.log("Route Stop", item.stopName); })
                 setRouteStops(routeList);
                 setSearchResult([routeList]);
             }
@@ -402,7 +378,6 @@ const Home = ({ navigation }) => {
     }
     function renderMap() {
         return (
-
             <View style={styles.MAP}>
                 <RenderCenterLocation />
                 <MapView
@@ -416,24 +391,7 @@ const Home = ({ navigation }) => {
                         longitudeDelta: 0.0421,
                     }}
                 >
-                    {/* <Marker
-                        key={`busLocation${99}`}
-                        title={""}
-                        description={""}
-                        coordinate={busLocation}
-                        style={{
-                            zIndex: 4
-                        }}
-                    >
-                        <Image
-                            source={icons.shuttle}
-                            resizeMode='cover'
-                            style={{
-                                width: 40,
-                                height: 40
-                            }}
-                        />
-                    </Marker> */}
+                    
                     <Marker.Animated
                         ref={markerRef}
                         coordinate={coordinate}
@@ -443,7 +401,7 @@ const Home = ({ navigation }) => {
                             style={{
                                 width: 40,
                                 height: 40,
-                                transform: [{rotate: `${heading}deg`}]
+                                transform: [{ rotate: `${heading}deg` }]
                             }}
                             resizeMode="contain"
                         />
@@ -678,7 +636,7 @@ const Home = ({ navigation }) => {
                                                     fontFamily: 'Ubuntu-Bold',
                                                 }}
                                             >
-                                                {stopsInfo[stopsInfo.findIndex(item => { return item.stopId === selectedId })].stopAddress}
+                                                {" "+stopsInfo[stopsInfo.findIndex(item => { return item.stopId === selectedId })].stopAddress}
                                             </Text>
                                         </Text>
                                         <Text
@@ -693,9 +651,9 @@ const Home = ({ navigation }) => {
 
                                             }}
                                         >
-                                            Next Bus in: 5 mins
+                                            Walking distance from you: {stopsInfo[stopsInfo.findIndex(item => { return item.stopId === selectedId }) + 1]?.tta}
                                         </Text>
-                                        <Text
+                                        {/* <Text
                                             style={{
                                                 flex: 0.33,
                                                 marginLeft: 5,
@@ -717,7 +675,7 @@ const Home = ({ navigation }) => {
                                             >
                                                 {stopsInfo[stopsInfo.findIndex(item => { return item.stopId === selectedId }) + 1]?.stopName}
                                             </Text>
-                                        </Text>
+                                        </Text> */}
                                     </View>
                                     {/* stop details box */}
                                 </Card>
@@ -808,9 +766,11 @@ const Home = ({ navigation }) => {
 
                         axios(config)
                             .then(function (response) {
+                                console.log("Response of getting distance",response.data.rows[0].elements[0].duration.text);
                                 sourceList.push({
                                     ...stop,
-                                    distance: JSON.stringify(response.data.rows[0].elements[0].distance.value)
+                                    distance: JSON.stringify(response.data.rows[0].elements[0].distance.value),
+                                    tta:response.data.rows[0].elements[0].duration.text
                                 })
                                 // console.log(JSON.stringify(response.data.rows[0].elements[0].distance.value));
                                 // console.log("The Updated stops Information is:", JSON.stringify(sourceList.sort(function (a, b) { return a.distance - b.distance })));
@@ -845,7 +805,8 @@ const Home = ({ navigation }) => {
                             .then(function (response) {
                                 destinationList.push({
                                     ...stop,
-                                    distance: JSON.stringify(response.data.rows[0].elements[0].distance.value)
+                                    distance: JSON.stringify(response.data.rows[0].elements[0].distance.value),
+                                    tta:response.data.rows[0].elements[0].duration.text
                                 })
                                 // console.log(JSON.stringify(response.data.rows[0].elements[0].distance.value));
                                 // console.log("The Destination Information is:", JSON.stringify(destinationList.sort(function (a, b) { return a.distance - b.distance })));
@@ -915,7 +876,9 @@ const Home = ({ navigation }) => {
                             <Text
                                 style={{
                                     height: 20,
-                                    fontFamily: 'Ubuntu-Regular'
+                                    fontSize: 16,
+                                    color: COLORS.white,
+                                    fontFamily: 'Ubuntu-Bold'
                                 }}
                             >
                                 Search Bus Routes:
@@ -1164,7 +1127,7 @@ const Home = ({ navigation }) => {
                         </Card>
                     }
                 </View>
-            </Modal >
+            </Modal>
         )
     }
     function renderSearchResultModal() {
@@ -1195,189 +1158,205 @@ const Home = ({ navigation }) => {
                     backgroundColor: COLORS.black
                 }}
             >
-                <View
-                    style={{
-                        backgroundColor: COLORS.white,
-                        height: "100%",
-                        width: "100%",
-                    }}
-                >
+                {
+                    routeStops.length !== 0 &&
                     <View
                         style={{
-                            height: SIZES.height / 3
-                        }}
-                    >
-                        <MapView
-                            ref={mapRef}
-                            style={{ flex: 1 }}
-                            scrollEnabled={false}
-                            zoomEnabled={false}
-                            rotateEnabled={false}
-                            initialRegion={pickupCoords}
-                        >
-                            {
-                                routeStops.map(stop => {
-                                    return (
-                                        <Marker
-                                            coordinate={stop.stopCoordinates}
-                                        />
-                                    )
-                                })
-                            }
-                            {
-                                routeStops.map(stop => {
-                                    return (
-                                        <MapViewDirections
-                                            origin={stop.stopCoordinates}
-                                            destination={routeStops[routeStops?.length - 1].stopCoordinates}
-                                            apikey={GOOGLE_MAPS_API}
-                                            strokeWidth={3}
-                                            strokeColor={COLORS.black}
-                                            optimizeWaypoints={true}
-                                            onReady={result => {
-                                                mapRef.current.fitToCoordinates(result.coordinates,
-                                                    {
-                                                        edgePadding: {
-                                                            right: 100,
-                                                            bottom: 20,
-                                                            left: 100,
-                                                            top: 20
-                                                        }
-                                                    })
-                                            }}
-                                        />
-                                    )
-                                })
-                            }
-                        </MapView>
-                    </View>
-                    <View
-                        style={{
-                            flex: 2,
-                            top: -15,
-                            marginBottom: -15
+                            backgroundColor: COLORS.white,
+                            height: "100%",
+                            width: "100%",
                         }}
                     >
                         <View
                             style={{
-                                flex: 1,
-                                backgroundColor: COLORS.mailaWhite,
-                                borderTopStartRadius: 22,
-                                borderTopEndRadius: 22,
+                                height: SIZES.height / 3
+                            }}
+                        >
+                            <MapView
+                                ref={mapRef}
+                                style={{ flex: 1 }}
+                                scrollEnabled={true}
+                                zoomEnabled={true}
+                                rotateEnabled={false}
+                                initialRegion={pickupCoords}
+                            >
+                                {
+                                    routeStops.map((stop, index) => {
+                                        return (
+                                            <Marker
+                                                key={index}
+                                                title={stop.stopName}
+                                                description={stop.stopAddress}
+                                                coordinate={stop.stopCoordinates}
+                                            >
+                                                <Image
+                                                    source={icons.busStop}
+                                                    resizeMode='cover'
+                                                    style={{
+                                                        width: 40,
+                                                        height: 40
+                                                    }}
+                                                />
+                                            </Marker>
+                                        )
+                                    })
+
+                                }
+                                {
+                                    routeStops.map((stop)=>{
+                                        return(
+                                            <MapViewDirections
+                                                origin={routeStops[0].stopCoordinates}
+                                                destination={routeStops[routeStops.length-1].stopCoordinates}
+                                                apikey={GOOGLE_MAPS_API}
+                                                strokeWidth={3}
+                                                strokeColor={COLORS.black}
+                                                optimizeWaypoints={true}
+                                                onReady={result => {
+                                                    mapRef.current.fitToCoordinates(result.coordinates,
+                                                        {
+                                                            edgePadding: {
+                                                                right: 100,
+                                                                bottom: 20,
+                                                                left: 100,
+                                                                top: 20
+                                                            }
+                                                        })
+                                                }}
+                                            />
+                                        )
+                                    })
+                                }
+                            </MapView>
+                        </View>
+                        <View
+                            style={{
+                                flex: 2,
+                                top: -15,
+                                marginBottom: -15
                             }}
                         >
                             <View
                                 style={{
-                                    position: "absolute",
-                                    width: SIZES.width - SIZES.padding,
-                                    alignSelf: 'center',
-                                    marginTop: 20,
+                                    flex: 1,
+                                    backgroundColor: COLORS.mailaWhite,
+                                    borderTopStartRadius: 22,
+                                    borderTopEndRadius: 22,
                                 }}
                             >
-                                <Image
-                                    source={icons.bus3}
-                                    resizeMode="cover"
+                                <View
                                     style={{
-                                        width: 40,
-                                        height: 40
-                                    }}
-                                />
-                                <Text
-                                    style={{
-                                        position: 'absolute',
-                                        top: 40,
-                                        fontSize: 25,
-                                        color: COLORS.black,
-                                        fontFamily: "Ubuntu-Regular"
+                                        position: "absolute",
+                                        width: SIZES.width - SIZES.padding,
+                                        alignSelf: 'center',
+                                        marginTop: 20,
                                     }}
                                 >
-                                    {routeStops[routeStops?.length - 1].stopName}
-                                </Text>
-                                <Text
-                                    style={{
-                                        position: 'absolute',
-                                        top: 70,
-                                        left: 2,
-                                        fontSize: 14,
-                                        color: '#9B9999',
-                                        fontFamily: "Ubuntu-Regular"
-                                    }}
-                                >
-                                    From <Text style={{ color: '#535353', fontFamily: "Ubuntu-Regular" }}>current location</Text>
-                                </Text>
-                                <View>
                                     <Image
-                                        source={icons.online}
+                                        source={icons.bus3}
                                         resizeMode="cover"
                                         style={{
                                             width: 40,
-                                            height: 40,
-                                            position: 'absolute',
-                                            right: 70,
-                                            top: -20,
-
+                                            height: 40
                                         }}
                                     />
                                     <Text
                                         style={{
-                                            fontSize: 14,
                                             position: 'absolute',
-                                            right: 14,
-                                            top: -10,
-                                            color: '#4FCF88',
-                                            fontFamily: "Ubuntu-Regular"
-                                        }}
-                                    >
-                                        On-time
-                                    </Text>
-                                    <Text
-                                        style={{
-                                            fontSize: 14,
-                                            position: 'absolute',
-                                            right: 4,
-                                            top: 20,
+                                            top: 40,
+                                            fontSize: 25,
                                             color: COLORS.black,
                                             fontFamily: "Ubuntu-Regular"
                                         }}
                                     >
-                                        3 stops • <Text style={{ color: '#4FCF88', fontFamily: "Ubuntu-Regular" }} >25 mins</Text>
+                                        {routeStops[routeStops?.length - 1].stopName}
                                     </Text>
+                                    <Text
+                                        style={{
+                                            position: 'absolute',
+                                            top: 70,
+                                            left: 2,
+                                            fontSize: 14,
+                                            color: '#9B9999',
+                                            fontFamily: "Ubuntu-Regular"
+                                        }}
+                                    >
+                                        From <Text style={{ color: '#535353', fontFamily: "Ubuntu-Regular" }}>current location</Text>
+                                    </Text>
+                                    <View>
+                                        <Image
+                                            source={icons.online}
+                                            resizeMode="cover"
+                                            style={{
+                                                width: 40,
+                                                height: 40,
+                                                position: 'absolute',
+                                                right: 70,
+                                                top: -20,
+
+                                            }}
+                                        />
+                                        <Text
+                                            style={{
+                                                fontSize: 14,
+                                                position: 'absolute',
+                                                right: 14,
+                                                top: -10,
+                                                color: '#4FCF88',
+                                                fontFamily: "Ubuntu-Regular"
+                                            }}
+                                        >
+                                            On-time
+                                        </Text>
+                                        <Text
+                                            style={{
+                                                fontSize: 14,
+                                                position: 'absolute',
+                                                right: 4,
+                                                top: 20,
+                                                color: COLORS.black,
+                                                fontFamily: "Ubuntu-Regular"
+                                            }}
+                                        >
+                                            {routeStops.length} stops • <Text style={{ color: '#4FCF88', fontFamily: "Ubuntu-Regular" }} >25 mins</Text>
+                                        </Text>
+                                    </View>
                                 </View>
+                                <View style={
+                                    {
+                                        position: 'absolute',
+                                        top: 120,
+                                        width: SIZES.width - SIZES.padding,
+                                        height: 2,
+                                        alignSelf: 'center',
+                                        backgroundColor: '#B6B6B6',
+                                        borderRadius: 2,
+                                    }
+                                } />
+                                <FlatList
+                                    style={{
+                                        top: 125,
+                                        marginBottom: 150
+                                        // bottom:
+                                    }}
+                                    data={routeStops}
+                                    keyExtractor={item => item.id}
+                                    showsVerticalScrollIndicator={false}
+                                    ItemSeparatorComponent={() => {
+                                        return (
+                                            <LineDivider />
+                                        )
+                                    }}
+                                    renderItem={({ item, index }) => {
+                                        return (
+                                            <StopCard data={item} destination={index == routeStops.length - 1} />
+                                        )
+                                    }}
+                                />
                             </View>
-                            <View style={
-                                {
-                                    position: 'absolute',
-                                    top: 120,
-                                    width: SIZES.width - SIZES.padding,
-                                    height: 2,
-                                    alignSelf: 'center',
-                                    backgroundColor: '#B6B6B6',
-                                    borderRadius: 2,
-                                }
-                            } />
-                            <FlatList
-                                style={{
-                                    top: 125,
-                                    marginBottom: 150
-                                    // bottom:
-                                }}
-                                data={routeStops}
-                                keyExtractor={item => item.id}
-                                showsVerticalScrollIndicator={false}
-                                ItemSeparatorComponent={() => {
-                                    return (
-                                        <LineDivider />
-                                    )
-                                }}
-                                renderItem={({ item, index }) => {
-                                    return (
-                                        <StopCard data={item} destination={index == routeStops.length - 1} />
-                                    )
-                                }}
-                            />
                         </View>
                     </View>
-                </View>
+                }
             </Modal >
         )
     }
