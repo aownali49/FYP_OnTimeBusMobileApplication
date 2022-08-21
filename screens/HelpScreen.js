@@ -6,7 +6,6 @@ import { COLORS,icons } from '../constants'
 import Moment from 'moment';
 import { Card } from 'react-native-shadow-cards';
 
-
 const HelpScreen = ({ navigation: { goBack } }) => {
 
   const [complaint, setComplaint] = useState({

@@ -36,7 +36,7 @@ const exclamation = require("../assets/icons/exclamation.png");
 const busStick = require("../assets/icons/busStick.png");
 const logout = require("../assets/icons/logout.png");
 const shuttle = require("../assets/icons/shuttle.png");
-
+const creditCard = require("../assets/icons/creditCard.png");
 
 
 export default {
@@ -77,5 +77,6 @@ export default {
     exclamation,
     busStick,
     logout,
-    shuttle
+    shuttle,
+    creditCard
 }

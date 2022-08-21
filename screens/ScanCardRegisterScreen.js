@@ -19,7 +19,7 @@ const ScanCardRegisterScreen = ({ navigation }) => {
             await NfcManager.requestTechnology(NfcTech.Ndef);
             // the resolved tag object will contain `ndefMessage` property
             const tag = await NfcManager.getTag();
-            let payload = tag.ndefMessage[0].payload;
+            let payload = tag.ndefMessage[0]?.payload;
             let numArray = "";
             for (let index = 0; index < payload.length; index++) {
                 numArray = numArray.concat(String.fromCharCode(payload[index]));
@@ -28,6 +28,9 @@ const ScanCardRegisterScreen = ({ navigation }) => {
             setCardNumber(numArray);
         } catch (ex) {
             setCardNumber(null);
+            setModalOpen(false);
+            setErrorMessage("Invalid card scanned, please present a valid QuickBus card!")
+            setErrorModal(true);
             console.warn('Oops!', ex);
         } finally {
             // stop the nfc scanning
@@ -133,17 +136,53 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                     <TouchableOpacity
                         onPress={() => {
                             try {
-                                if (cardNumber!==null) {
+                                if (cardNumber !== null) {
                                     db()
-                                        .collection('users')
-                                        .doc(auth().currentUser.uid)
-                                        .update({
-                                            'cardNumber': cardNumber
+                                        .collection('card')
+                                        .doc(cardNumber)
+                                        .get()
+                                        .then((doc) => {
+                                            if (doc.exists) {
+                                                let cardUser = doc.data();
+                                                console.log("Card Data", cardUser.userId);
+                                                if (cardUser.userId == "") 
+                                                {
+                                                    db()
+                                                        .collection('users')
+                                                        .doc(auth().currentUser.uid)
+                                                        .update({
+                                                            'cardNumber': cardNumber
+                                                        })
+                                                    db()
+                                                        .collection('card')
+                                                        .doc(cardNumber)
+                                                        .update({
+                                                            'userId': auth().currentUser.uid
+                                                        })
+                                                    navigation.replace('HomeStack')
+                                                }
+                                                else {
+                                                    setErrorMessage("This card is in use, please enter a unique card number.")
+                                                    setErrorModal(true);
+                                                }
+                                            }
+                                            else {
+                                                setErrorMessage("Card Number is invalid, please enter an approved QuickBus number.")
+                                                setErrorModal(true);
+                                            }
                                         })
-                                    navigation.replace('HomeStack')
+                                        .catch((error) => {
+                                            console.log("Error", error);
+                                        })
+                                    // db()
+                                    //     .collection('users')
+                                    //     .doc(auth().currentUser.uid)
+                                    //     .update({
+                                    //         'cardNumber': cardNumber
+                                    //     })
+                                    // navigation.replace('HomeStack')
                                 }
-                                else
-                                {
+                                else {
                                     setErrorMessage("Please enter a QuickBus card to continue")
                                     setErrorModal(true);
                                 }
@@ -184,7 +223,6 @@ const ScanCardRegisterScreen = ({ navigation }) => {
                     modalOpen &&
                     <Animatable.View
                         animation='fadeInUpBig'
-                    // animation='slideInDown'
                     >
                         <Card
                             animationType='fade'

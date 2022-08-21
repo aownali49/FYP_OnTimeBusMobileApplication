@@ -167,26 +167,26 @@ const JourneyScreen = ({ route, navigation }) => {
             if (doc.exists) {
                 // console.log("User Information", doc.data());
                 setUserData(doc.data());
-                setCardNumber(doc.data().cardNumber ?? "");
+                setCardNumber(doc.data().cardNumber+"" ?? "");
             } else {
                 console.log("No such document!");
             }
         }).catch((error) => {
             console.log("Error getting document:", error);
         });
-    }, [useIsFocused])
+    }, [isFocused])
 
     // Live Journey Updates Listener
     useEffect(() => {
         console.log("Running live fetch (Journey)");
         const onValueChange = realdb()
-            .ref("1941094527")
+            .ref(cardNumber)
             .on('child_added', (snapshot) => {
                 console.log(snapshot.key,":",snapshot.val());
                 setJourney((p) => { return {...p, [snapshot.key]:snapshot.val()} })
             });
         // Stop listening for updates when no longer required
-        return () => realdb().ref("1941094527").off('child_added', onValueChange);
+        return () => realdb().ref(cardNumber).off('child_added', onValueChange);
     }, [isFocused]);
 
     useEffect(()=>{
@@ -307,7 +307,8 @@ const JourneyScreen = ({ route, navigation }) => {
         console.log("Inside Save journey", journeyInfo);
         var docRef = db().collection("users").doc(auth().currentUser.uid);
         docRef.update({
-            transactionInfo: db.FieldValue.arrayUnion(journeyInfo)
+            transactionInfo: db.FieldValue.arrayUnion(journeyInfo),
+            amount: (userData.amount - journeyInfo.amount)
         })
             .then(() => {
                 setJourneyInfo({
@@ -324,12 +325,25 @@ const JourneyScreen = ({ route, navigation }) => {
                 setJourneyCompleted(false);
                 setJourneyInProgress(false);
                 realdb()
-                    .ref('1941094527').remove(() => {
+                    .ref(cardNumber+'/Source').remove(() => {
                         console.log("Live Journey Instace Removed");
-                    }).catch(error => { console.log("Error Removing live journey instance", error); })
+                    })
+                    .catch(error => { console.log("Error Removing live Source instance", error); })
+
+                realdb()
+                    .ref(cardNumber+'/Destination').remove(()=>{
+                        console.log("Live Journey Instace Removed");
+                    })
+                    .catch(error => { console.log("Error Removing live Destination instance", error); })
+
+                realdb()
+                .ref(cardNumber+'/Amount')
+                .set(userData.amount - journeyInfo.amount)
+                .catch(error => { console.log("Error updating live Amount instance", error); })
+
                 db()
-                    .collection('users')
-                    .doc(auth().currentUser.uid)
+                    .collection('card')
+                    .doc(cardNumber)
                     .update({
                         amount: (userData.amount - journeyInfo.amount)
                     })

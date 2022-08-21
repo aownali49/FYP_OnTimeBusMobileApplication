@@ -6,7 +6,6 @@ import { auth, db } from '../firebase';
 import { useIsFocused } from '@react-navigation/native'
 
 
-
 const Settings = ({ navigation }) => {
   const [settingsList, setSettingsList] = useState([
     {
@@ -17,7 +16,7 @@ const Settings = ({ navigation }) => {
     {
       settingName: "Card Settings",
       targetAddress: 'NewCard',
-      icon: icons.notification
+      icon: icons.creditCard
     },
     {
       settingName: "Help",
@@ -42,6 +41,7 @@ const Settings = ({ navigation }) => {
     fullName: 'Not Provided',
     email: 'Not Provided'
   })
+  const isFocused = useIsFocused()
 
   useEffect(() => {
     var docRef = db().collection("users").doc(auth().currentUser.uid);
@@ -63,7 +63,7 @@ const Settings = ({ navigation }) => {
     });
 
 
-  }, [navigation,useIsFocused])
+  }, [navigation,isFocused])
   return (
     <View
       style={styles.containerStyle}

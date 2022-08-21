@@ -28,8 +28,9 @@ const Signup = ({ navigation }) => {
         auth()
             .createUserWithEmailAndPassword(data.email.toLowerCase(), data.password)
             .then(userCredentials => {
+                userCredentials.user.sendEmailVerification();
                 const user = userCredentials.user
-                // user.sendEmailVerification()
+               
                 addUser(user)
                 setData({
                     email: '',
