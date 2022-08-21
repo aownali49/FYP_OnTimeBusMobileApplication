@@ -8,10 +8,11 @@ import SearchResultCard from '../components/SearchResultCard';
 import GOOGLE_MAPS_API from './GoogleMapsAPI';
 var axios = require('axios');
 import { auth, db, realdb, firebase } from '../firebase'
-
+import Geolocation from "react-native-geolocation-service";
 import MapViewDirections from 'react-native-maps-directions';
 import { Card } from 'react-native-shadow-cards';
 import { Dimensions } from "react-native";
+import { PermissionsAndroid } from 'react-native';
 
 const screen = Dimensions.get('window');
 const ASPECT_RATIO = screen.width / screen.height;
@@ -20,6 +21,28 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 
 const Home = ({ navigation }) => {
+
+    async function requestLocationPermission() {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    'title': 'Example App',
+                    'message': 'Example App access to your location '
+                }
+            )
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log("You can use the location")
+            } else {
+                console.log("location permission denied")
+            }
+        } catch (err) {
+            console.warn(err)
+        }
+    }
+
+
+
     let _panel = useRef(null);
     const [userData, setUserData] = useState({})
     const [journey, setJourney] = useState([])
@@ -70,6 +93,32 @@ const Home = ({ navigation }) => {
 
     const { curLoc, time, distance, destinationCords, isLoading, coordinate, heading } = state
     const updateState = (data) => setState((state) => ({ ...state, ...data }));
+    const [currentLocation, setCurrentLocation] = useState({
+        latitude: 0,
+        longitude: 0,
+        coordinates: [],
+    })
+    useEffect(() => {
+        requestLocationPermission()
+        Geolocation.getCurrentPosition(
+            (position) => {
+                setCurrentLocation({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                })
+                console.log("Latest Location==>",currentLocation);
+            },
+            (error) => {
+                console.warn(error.message.toString());
+            },
+            {
+                showLocationDialog: true,
+                enableHighAccuracy: true,
+                timeout: 20000,
+                maximumAge: 0
+            }
+        );
+    }, [])
 
     //Total Stops List
     // const [stopsInfo, setStopInfo] = useState([
@@ -379,7 +428,7 @@ const Home = ({ navigation }) => {
     function renderMap() {
         return (
             <View style={styles.MAP}>
-                <RenderCenterLocation />
+                {/* <RenderCenterLocation /> */}
                 <MapView
                     ref={_mapRef}
                     style={{ flex: 1 }}
@@ -391,13 +440,27 @@ const Home = ({ navigation }) => {
                         longitudeDelta: 0.0421,
                     }}
                 >
-                    
+
                     <Marker.Animated
                         ref={markerRef}
                         coordinate={coordinate}
                     >
                         <Image
                             source={icons.shuttle}
+                            style={{
+                                width: 40,
+                                height: 40,
+                                transform: [{ rotate: `${heading}deg` }]
+                            }}
+                            resizeMode="contain"
+                        />
+                    </Marker.Animated>
+                    <Marker.Animated
+                        ref={markerRef}
+                        coordinate={currentLocation}
+                    >
+                        <Image
+                            source={icons.man}
                             style={{
                                 width: 40,
                                 height: 40,
@@ -636,7 +699,7 @@ const Home = ({ navigation }) => {
                                                     fontFamily: 'Ubuntu-Bold',
                                                 }}
                                             >
-                                                {" "+stopsInfo[stopsInfo.findIndex(item => { return item.stopId === selectedId })].stopAddress}
+                                                {" " + stopsInfo[stopsInfo.findIndex(item => { return item.stopId === selectedId })].stopAddress}
                                             </Text>
                                         </Text>
                                         <Text
@@ -691,7 +754,16 @@ const Home = ({ navigation }) => {
         return (
             <TouchableOpacity
                 onPress={() => {
-                    console.warn("Center Location")
+                    console.warn("Center Location");
+                    _mapRef.current.fitToCoordinates(currentLocation.coordinates,
+                        {
+                            edgePadding: {
+                                right: 100,
+                                bottom: 20,
+                                left: 100,
+                                top: 20
+                            }
+                        })
                 }}
                 style={{
                     position: "absolute",
@@ -766,11 +838,11 @@ const Home = ({ navigation }) => {
 
                         axios(config)
                             .then(function (response) {
-                                console.log("Response of getting distance",response.data.rows[0].elements[0].duration.text);
+                                console.log("Response of getting distance", response.data.rows[0].elements[0].duration.text);
                                 sourceList.push({
                                     ...stop,
                                     distance: JSON.stringify(response.data.rows[0].elements[0].distance.value),
-                                    tta:response.data.rows[0].elements[0].duration.text
+                                    tta: response.data.rows[0].elements[0].duration.text
                                 })
                                 // console.log(JSON.stringify(response.data.rows[0].elements[0].distance.value));
                                 // console.log("The Updated stops Information is:", JSON.stringify(sourceList.sort(function (a, b) { return a.distance - b.distance })));
@@ -806,7 +878,7 @@ const Home = ({ navigation }) => {
                                 destinationList.push({
                                     ...stop,
                                     distance: JSON.stringify(response.data.rows[0].elements[0].distance.value),
-                                    tta:response.data.rows[0].elements[0].duration.text
+                                    tta: response.data.rows[0].elements[0].duration.text
                                 })
                                 // console.log(JSON.stringify(response.data.rows[0].elements[0].distance.value));
                                 // console.log("The Destination Information is:", JSON.stringify(destinationList.sort(function (a, b) { return a.distance - b.distance })));
@@ -1203,11 +1275,11 @@ const Home = ({ navigation }) => {
 
                                 }
                                 {
-                                    routeStops.map((stop)=>{
-                                        return(
+                                    routeStops.map((stop) => {
+                                        return (
                                             <MapViewDirections
                                                 origin={routeStops[0].stopCoordinates}
-                                                destination={routeStops[routeStops.length-1].stopCoordinates}
+                                                destination={routeStops[routeStops.length - 1].stopCoordinates}
                                                 apikey={GOOGLE_MAPS_API}
                                                 strokeWidth={3}
                                                 strokeColor={COLORS.black}

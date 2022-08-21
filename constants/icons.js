@@ -37,7 +37,7 @@ const busStick = require("../assets/icons/busStick.png");
 const logout = require("../assets/icons/logout.png");
 const shuttle = require("../assets/icons/shuttle.png");
 const creditCard = require("../assets/icons/creditCard.png");
-
+const checkMark = require("../assets/icons/checkMark.png");
 
 export default {
     bus,
@@ -78,5 +78,6 @@ export default {
     busStick,
     logout,
     shuttle,
-    creditCard
+    creditCard,
+    checkMark
 }

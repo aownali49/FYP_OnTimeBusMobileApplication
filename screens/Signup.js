@@ -195,7 +195,7 @@ const Signup = ({ navigation }) => {
                     <TextInput
                         placeholder='Password'
                         placeholderTextColor={'#B5B5B5'}
-                        secureTextEntry={data.secureTextEntry}
+                        secureTextEntry={true}
                         onChangeText={(value) => passwordChangeHandler(value)}
                         value={data.password}
                         style={styles.PasswordInputStyle}
@@ -222,7 +222,7 @@ const Signup = ({ navigation }) => {
                     <TextInput
                         placeholder='Re-Enter Password'
                         placeholderTextColor={'#B5B5B5'}
-                        secureTextEntry={data.secureTextEntry}
+                        secureTextEntry={true}
                         onChangeText={(value) => {
                             confirmPasswordChangeHandler(value)
                         }}
@@ -315,7 +315,7 @@ const Signup = ({ navigation }) => {
                                     marginTop: 20
                                 }}
                             >
-                                Login Error
+                                Signup Error
                             </Text>
                             <Image
                                 style={{

@@ -1,20 +1,30 @@
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity, TextInput, FlatList, Modal, Pressable, ActivityIndicator } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
 import * as Animatable from 'react-native-animatable'
-import MapView, { Marker, Polyline } from 'react-native-maps'
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE, AnimatedRegion } from 'react-native-maps'
+
 import { COLORS, FONTS, icons, SIZES, images } from '../constants'
 import { LineDivider, StopCard } from '../components';
 import GOOGLE_MAPS_API from './GoogleMapsAPI';
 import { Card } from 'react-native-shadow-cards'
 import { useIsFocused } from '@react-navigation/native'
 import Moment from 'moment';
+import { PermissionsAndroid } from 'react-native';
+import Geolocation from "react-native-geolocation-service";
+import { auth, db, realdb, firebase } from '../firebase';
+import { Dimensions } from "react-native";
 
 var axios = require('axios');
-import { auth, db, realdb, firebase } from '../firebase'
+
+const screen = Dimensions.get('window');
+const ASPECT_RATIO = screen.width / screen.height;
+const LATITUDE_DELTA = 0.04;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 const JourneyScreen = ({ route, navigation }) => {
     Moment.locale('en');
-    const isFocused = useIsFocused()
+    const isFocused = useIsFocused();
+
     const [journey, setJourney] = useState([])
     const [coordinates, setCoordinates] = useState({
         pickupCoords: {
@@ -160,6 +170,50 @@ const JourneyScreen = ({ route, navigation }) => {
         amount = stopCount * 30;
         return amount;
     }
+    const [currentLocation, setCurrentLocation] = useState({
+        latitude: 0,
+        longitude: 0,
+        coordinates: [],
+    })
+    async function requestLocationPermission() {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    'title': 'Example App',
+                    'message': 'Example App access to your location '
+                }
+            )
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log("You can use the location")
+            } else {
+                console.log("location permission denied")
+            }
+        } catch (err) {
+            console.warn(err)
+        }
+    }
+    useEffect(() => {
+        requestLocationPermission()
+        Geolocation.getCurrentPosition(
+            (position) => {
+                setCurrentLocation({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                })
+                console.log("Latest Location==>", currentLocation);
+            },
+            (error) => {
+                console.warn(error.message.toString());
+            },
+            {
+                showLocationDialog: true,
+                enableHighAccuracy: true,
+                timeout: 20000,
+                maximumAge: 0
+            }
+        );
+    }, [])
 
     useEffect(() => {
         var docRef = db().collection("users").doc(auth().currentUser.uid);
@@ -167,7 +221,7 @@ const JourneyScreen = ({ route, navigation }) => {
             if (doc.exists) {
                 // console.log("User Information", doc.data());
                 setUserData(doc.data());
-                setCardNumber(doc.data().cardNumber+"" ?? "");
+                setCardNumber(doc.data().cardNumber + "" ?? "");
             } else {
                 console.log("No such document!");
             }
@@ -182,17 +236,16 @@ const JourneyScreen = ({ route, navigation }) => {
         const onValueChange = realdb()
             .ref(cardNumber)
             .on('child_added', (snapshot) => {
-                console.log(snapshot.key,":",snapshot.val());
-                setJourney((p) => { return {...p, [snapshot.key]:snapshot.val()} })
+                console.log(snapshot.key, ":", snapshot.val());
+                setJourney((p) => { return { ...p, [snapshot.key]: snapshot.val() } })
             });
         // Stop listening for updates when no longer required
         return () => realdb().ref(cardNumber).off('child_added', onValueChange);
     }, [isFocused]);
 
-    useEffect(()=>{
-        console.log("Journey is invoked",journey);
-        if(journey["Source"])
-        {
+    useEffect(() => {
+        console.log("Journey is invoked", journey);
+        if (journey["Source"]) {
             console.log("Journey exists");
             setJourneyInProgress(true);
             setJourneyInfo({
@@ -203,9 +256,8 @@ const JourneyScreen = ({ route, navigation }) => {
                 origStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey["Source"] })].stopName
             })
         }
-        if (journey["Destination"]) 
-        {
-            console.log("Journey is completed"); 
+        if (journey["Destination"]) {
+            console.log("Journey is completed");
             setJourneyCompleted(true);
             setJourneyInfo({
                 ...journeyInfo,
@@ -213,10 +265,10 @@ const JourneyScreen = ({ route, navigation }) => {
                 boardingTime: Moment(new Date()).format('hh:mm'),
                 destStopId: journey["Destination"],
                 destStopName: stopsInfo[stopsInfo.findIndex((item) => { return item.stopId == journey["Destination"] })].stopName,
-                amount: calculateFare(journey["Source"],journey["Destination"])
+                amount: calculateFare(journey["Source"], journey["Destination"])
             })
         }
-    },[journey])
+    }, [journey])
 
     // useEffect(() => {
     // console.log("Running live fetch (Home)");
@@ -302,7 +354,7 @@ const JourneyScreen = ({ route, navigation }) => {
     // }, [journey])
 
     //Save Journey InformationboardingTime
-    
+
     function handleSaveJourney() {
         console.log("Inside Save journey", journeyInfo);
         var docRef = db().collection("users").doc(auth().currentUser.uid);
@@ -325,21 +377,21 @@ const JourneyScreen = ({ route, navigation }) => {
                 setJourneyCompleted(false);
                 setJourneyInProgress(false);
                 realdb()
-                    .ref(cardNumber+'/Source').remove(() => {
+                    .ref(cardNumber + '/Source').remove(() => {
                         console.log("Live Journey Instace Removed");
                     })
                     .catch(error => { console.log("Error Removing live Source instance", error); })
 
                 realdb()
-                    .ref(cardNumber+'/Destination').remove(()=>{
+                    .ref(cardNumber + '/Destination').remove(() => {
                         console.log("Live Journey Instace Removed");
                     })
                     .catch(error => { console.log("Error Removing live Destination instance", error); })
 
                 realdb()
-                .ref(cardNumber+'/Amount')
-                .set(userData.amount - journeyInfo.amount)
-                .catch(error => { console.log("Error updating live Amount instance", error); })
+                    .ref(cardNumber + '/Amount')
+                    .set(userData.amount - journeyInfo.amount)
+                    .catch(error => { console.log("Error updating live Amount instance", error); })
 
                 db()
                     .collection('card')
@@ -355,6 +407,28 @@ const JourneyScreen = ({ route, navigation }) => {
     }
 
     const mapRef = useRef();
+    const markerRef = useRef()
+    const [state, setState] = useState({
+        curLoc: {
+            latitude: 30.7046,
+            longitude: 77.1025,
+        },
+        destinationCords: {},
+        isLoading: false,
+        coordinate: new AnimatedRegion({
+            latitude: 33.659123,
+            longitude: 73.034217,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA
+        }),
+        time: 0,
+        distance: 0,
+        heading: 0
+
+    })
+
+    const { curLoc, time, distance, destinationCords, isLoading, coordinate, heading } = state
+    const updateState = (data) => setState((state) => ({ ...state, ...data }));
 
     if (journeyInProgress) {
         return (
@@ -377,6 +451,20 @@ const JourneyScreen = ({ route, navigation }) => {
                         // rotateEnabled={false}
                         initialRegion={coordinates.pickupCoords}
                     >
+                        <Marker.Animated
+                            ref={markerRef}
+                            coordinate={currentLocation}
+                        >
+                            <Image
+                                source={icons.shuttle}
+                                style={{
+                                    width: 40,
+                                    height: 40,
+                                    transform: [{ rotate: `${heading}deg` }]
+                                }}
+                                resizeMode="contain"
+                            />
+                        </Marker.Animated>
                     </MapView>
                 </View>
                 <Animatable.View
